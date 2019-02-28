@@ -1,0 +1,35 @@
+{
+    "generator-jhipster": {
+        "promptValues": {
+            "packageName": "br.com.tegra"
+        },
+        "jhipsterVersion": "5.8.1",
+        "applicationType": "monolith",
+        "baseName": "teste",
+        "packageName": "br.com.tegra",
+        "packageFolder": "br/com/tegra",
+        "serverPort": "8080",
+        "authenticationType": "jwt",
+        "cacheProvider": "ehcache",
+        "enableHibernateCache": true,
+        "websocket": false,
+        "databaseType": "sql",
+        "devDatabaseType": "h2Disk",
+        "prodDatabaseType": "mysql",
+        "searchEngine": false,
+        "messageBroker": false,
+        "serviceDiscoveryType": false,
+        "buildTool": "maven",
+        "enableSwaggerCodegen": false,
+        "jwtSecretKey": "NGE3OWY0Mjg4YTFlMzcyYjk0MzU2Nzc3ODUyMDg4MGI5YjllYTFlZWM1MjE1M2M5NTRlNTU1Njg3MTUyODVmNjI3NzY5M2MxZTBhOGYzNjkzYjUxN2Y3MWQ1MGMyM2FmZjU4NGVkOGYwMTFiMzNjNThkZTQ1OWM2MThjODQzNzY=",
+        "clientFramework": "angularX",
+        "useSass": true,
+        "clientPackageManager": "npm",
+        "testFrameworks": ["protractor"],
+        "jhiPrefix": "jhi",
+        "entitySuffix": "",
+        "dtoSuffix": "DTO",
+        "otherModules": [],
+        "enableTranslation": false
+    }
+}
