@@ -20,7 +20,7 @@
         "messageBroker": false,
         "serviceDiscoveryType": false,
         "buildTool": "maven",
-        "enableSwaggerCodegen": false,
+        "enableSwaggerCodegen": true,
         "jwtSecretKey": "NGE3OWY0Mjg4YTFlMzcyYjk0MzU2Nzc3ODUyMDg4MGI5YjllYTFlZWM1MjE1M2M5NTRlNTU1Njg3MTUyODVmNjI3NzY5M2MxZTBhOGYzNjkzYjUxN2Y3MWQ1MGMyM2FmZjU4NGVkOGYwMTFiMzNjNThkZTQ1OWM2MThjODQzNzY=",
         "clientFramework": "angularX",
         "useSass": true,

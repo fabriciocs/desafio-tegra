@@ -1,0 +1,65 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="airplaneTrip">
+            <h2><span>Airplane Trip</span> {{airplaneTrip.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>Flight</span></dt>
+                <dd>
+                    <span>{{airplaneTrip.flight}}</span>
+                </dd>
+                <dt><span>Departure Date</span></dt>
+                <dd>
+                    <span>{{airplaneTrip.departureDate}}</span>
+                </dd>
+                <dt><span>Arrival Date</span></dt>
+                <dd>
+                    <span>{{airplaneTrip.arrivalDate}}</span>
+                </dd>
+                <dt><span>Departure Time</span></dt>
+                <dd>
+                    <span>{{airplaneTrip.departureTime}}</span>
+                </dd>
+                <dt><span>Arrival Time</span></dt>
+                <dd>
+                    <span>{{airplaneTrip.arrivalTime}}</span>
+                </dd>
+                <dt><span>Price</span></dt>
+                <dd>
+                    <span>{{airplaneTrip.price}}</span>
+                </dd>
+                <dt><span>Departure Airport</span></dt>
+                <dd>
+                    <div *ngIf="airplaneTrip.departureAirport">
+                        <a [routerLink]="['/airport', airplaneTrip.departureAirport?.id, 'view']">{{airplaneTrip.departureAirport?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span>Arrival Airport</span></dt>
+                <dd>
+                    <div *ngIf="airplaneTrip.arrivalAirport">
+                        <a [routerLink]="['/airport', airplaneTrip.arrivalAirport?.id, 'view']">{{airplaneTrip.arrivalAirport?.airport}}</a>
+                    </div>
+                </dd>
+                <dt><span>Airline</span></dt>
+                <dd>
+                    <div *ngIf="airplaneTrip.airline">
+                        <a [routerLink]="['/airline', airplaneTrip.airline?.id, 'view']">{{airplaneTrip.airline?.name}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/airplane-trip', airplaneTrip.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

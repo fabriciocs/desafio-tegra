@@ -1,0 +1,39 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="airplaneTripImport">
+            <h2><span>Airplane Trip Import</span> {{airplaneTripImport.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>File</span></dt>
+                <dd>
+                    <span>{{airplaneTripImport.file}}</span>
+                </dd>
+                <dt><span>Date Time</span></dt>
+                <dd>
+                    <span>{{airplaneTripImport.dateTime}}</span>
+                </dd>
+                <dt><span>Mime Type</span></dt>
+                <dd>
+                    <span>{{airplaneTripImport.mimeType}}</span>
+                </dd>
+                <dt><span>Status</span></dt>
+                <dd>
+                    <span>{{airplaneTripImport.status}}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/airplane-trip-import', airplaneTripImport.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

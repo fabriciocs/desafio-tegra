@@ -1,0 +1,73 @@
+{
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [
+        {
+            "relationshipName": "departureAirport",
+            "otherEntityName": "airport",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipName": "arrivalAirport",
+            "otherEntityName": "airport",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "airport"
+        },
+        {
+            "relationshipName": "airline",
+            "otherEntityName": "airline",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "name"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "flight",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required",
+                "unique",
+                "minlength",
+                "maxlength",
+                "pattern"
+            ],
+            "fieldValidateRulesMinlength": "6",
+            "fieldValidateRulesMaxlength": "8",
+            "fieldValidateRulesPattern": "^[A-Z0-9]+$"
+        },
+        {
+            "fieldName": "departureDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "arrivalDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "departureTime",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "arrivalTime",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "price",
+            "fieldType": "BigDecimal",
+            "fieldValidateRules": [
+                "required",
+                "min"
+            ],
+            "fieldValidateRulesMin": "0.00"
+        }
+    ],
+    "changelogDate": "20190228154548",
+    "dto": "no",
+    "searchEngine": false,
+    "service": "serviceClass",
+    "entityTableName": "airplane_trip",
+    "databaseType": "sql",
+    "jpaMetamodelFiltering": false,
+    "pagination": "pagination"
+}
