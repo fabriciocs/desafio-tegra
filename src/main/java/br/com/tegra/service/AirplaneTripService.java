@@ -4,6 +4,7 @@ import br.com.tegra.domain.*;
 import br.com.tegra.repository.AirplaneTripRepository;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class AirplaneTripService {
 
     private enum MimeTypes {
         CSV("text/csv"),
-        JSON("text/json");
+        JSON("application/json");
 
         private String mimeType;
 
@@ -144,32 +145,14 @@ public class AirplaneTripService {
         }
     }
 
-    public Set<AirplaneTrip> loadFromJson(String fileName, Airline airline) {
-        log.debug("Request to save AirplaneTrip from CSV File : {}", fileName);
-//        try {
-//            JsonSerializableSchema bootstrapSchema = JsonSerializableSchema.build()
-//                .addColumn(new CsvSchema.Column(0, "flight"))
-//                .addColumn(new CsvSchema.Column(1, "departureAirport"))
-//                .addColumn(new CsvSchema.Column(2, "arrivalAirport"))
-//                .addColumn(new CsvSchema.Column(3, "departureDate"))
-//                .addColumn(new CsvSchema.Column(3, "arrivalDate"))
-//                .addColumn(new CsvSchema.Column(4, "departureTime"))
-//                .addColumn(new CsvSchema.Column(5, "arrivalTime"))
-//                .addColumn(new CsvSchema.Column(6, "price"))
-//                .build().withHeader();
-//            CsvMapper mapper = new CsvMapper();
-//            File file = new ClassPathResource(fileName).getFile();
-//            MappingIterator<AirplaneTrip> readValues =
-//                mapper.reader(bootstrapSchema).readValues(file);
-//            return readValues.readAll().stream().map(a -> {
-//                a.setAirline(airline);
-//                return a;
-//            }).collect(Collectors.toList());
-//        } catch (Exception e) {
-//            log.error("Error occurred while loading object list from file " + fileName, e);
-//            return Collections.emptyList();
-//        }
-        return new HashSet<>();
+    public Set<AirplaneTrip> loadFromJson(String fileName, Airline airline) throws IOException {
+        log.debug("Request to save AirplaneTrip from JSON File : {}", fileName);
+        File file = getFile(fileName);
+
+        ObjectMapper mapper = new ObjectMapper();
+        MappingIterator<AirplaneTripJson> mappingIterator = mapper.readerFor(AirplaneTripJson.class).readValues(file);
+        return mappingIterator.readAll().stream().map(a -> convertToAirplaneTrip(a, airline)).collect(Collectors.toSet());
+
     }
 
     private File getFile(String fileName) {
@@ -218,5 +201,25 @@ public class AirplaneTripService {
             .price(a.getPrice())
             .arrivalAirport(airportService.findByName(a.getArrivalAirport()))
             .departureAirport(airportService.findByName(a.getDepartureAirport()));
+    }
+
+    private AirplaneTrip convertToAirplaneTrip(AirplaneTripJson a, Airline airline) {
+        String datePattern = "yyyy-MM-dd";
+        LocalDate arrivalDate = LocalDate.parse(a.getDataSaida(), DateTimeFormatter.ofPattern(datePattern));
+        Instant arrivalTime = Instant.parse(a.getDataSaida() + "T" +a.getChegada()+":00Z");
+
+        LocalDate departureDate = LocalDate.parse(a.getDataSaida(), DateTimeFormatter.ofPattern(datePattern));
+        Instant departureTime = Instant.parse(a.getDataSaida() + "T" +a.getSaida()+":00Z");
+
+        return new AirplaneTrip()
+            .arrivalDate(arrivalDate)
+            .arrivalTime(arrivalTime)
+            .departureDate(departureDate)
+            .departureTime(departureTime)
+            .flight(a.getVoo())
+            .airline(airline)
+            .price(a.getValor())
+            .arrivalAirport(airportService.findByName(a.getDestino()))
+            .departureAirport(airportService.findByName(a.getOrigem()));
     }
 }
