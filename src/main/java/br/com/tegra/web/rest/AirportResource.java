@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -55,6 +56,15 @@ public class AirportResource {
         return ResponseEntity.created(new URI("/api/airports/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
+    }
+
+
+    @PostMapping("/airports/import")
+    public ResponseEntity<Void>  importAirport() throws URISyntaxException, IOException {
+        log.debug("Import Airports from json file");
+
+        airportService.loadAirportsFromUrl();
+        return ResponseEntity.ok(null);
     }
 
     /**

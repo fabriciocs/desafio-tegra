@@ -7,6 +7,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -29,8 +30,11 @@ public class AirplaneTripImport implements Serializable {
     @Column(name = "jhi_file")
     private String file;
 
+    @Column(name = "airline")
+    private String airline;
+
     @Column(name = "date_time")
-    private ZonedDateTime dateTime;
+    private Instant dateTime;
 
     @Column(name = "mime_type")
     private String mimeType;
@@ -61,16 +65,29 @@ public class AirplaneTripImport implements Serializable {
         this.file = file;
     }
 
-    public ZonedDateTime getDateTime() {
+    public String getAirline() {
+        return airline;
+    }
+
+    public AirplaneTripImport airline(String airline) {
+        this.airline = airline;
+        return this;
+    }
+
+    public void setAirline(String airline) {
+        this.airline = airline;
+    }
+
+    public Instant getDateTime() {
         return dateTime;
     }
 
-    public AirplaneTripImport dateTime(ZonedDateTime dateTime) {
+    public AirplaneTripImport dateTime(Instant dateTime) {
         this.dateTime = dateTime;
         return this;
     }
 
-    public void setDateTime(ZonedDateTime dateTime) {
+    public void setDateTime(Instant dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -126,6 +143,7 @@ public class AirplaneTripImport implements Serializable {
         return "AirplaneTripImport{" +
             "id=" + getId() +
             ", file='" + getFile() + "'" +
+            ", airline='" + getAirline() + "'" +
             ", dateTime='" + getDateTime() + "'" +
             ", mimeType='" + getMimeType() + "'" +
             ", status='" + getStatus() + "'" +

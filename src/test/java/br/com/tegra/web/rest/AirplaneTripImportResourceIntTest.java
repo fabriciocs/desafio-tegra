@@ -23,10 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
 import javax.persistence.EntityManager;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.ZoneOffset;
-import java.time.ZoneId;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import java.time.*;
 import java.util.List;
 
 
@@ -50,8 +49,11 @@ public class AirplaneTripImportResourceIntTest {
     private static final String DEFAULT_FILE = "AAAAAAAAAA";
     private static final String UPDATED_FILE = "BBBBBBBBBB";
 
-    private static final ZonedDateTime DEFAULT_DATE_TIME = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
-    private static final ZonedDateTime UPDATED_DATE_TIME = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+    private static final String DEFAULT_AIRLINE = "AAAAAAAAAA";
+    private static final String UPDATED_AIRLINE = "BBBBBBBBBB";
+
+    private static final Instant DEFAULT_DATE_TIME = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC).toInstant();
+    private static final Instant UPDATED_DATE_TIME = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0).toInstant();
 
     private static final String DEFAULT_MIME_TYPE = "AAAAAAAAAA";
     private static final String UPDATED_MIME_TYPE = "BBBBBBBBBB";
@@ -84,10 +86,13 @@ public class AirplaneTripImportResourceIntTest {
 
     private AirplaneTripImport airplaneTripImport;
 
+    @Autowired
+    private HttpServletRequest request;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final AirplaneTripImportResource airplaneTripImportResource = new AirplaneTripImportResource(airplaneTripImportService);
+        final AirplaneTripImportResource airplaneTripImportResource = new AirplaneTripImportResource(airplaneTripImportService, request);
         this.restAirplaneTripImportMockMvc = MockMvcBuilders.standaloneSetup(airplaneTripImportResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -105,6 +110,7 @@ public class AirplaneTripImportResourceIntTest {
     public static AirplaneTripImport createEntity(EntityManager em) {
         AirplaneTripImport airplaneTripImport = new AirplaneTripImport()
             .file(DEFAULT_FILE)
+            .airline(DEFAULT_AIRLINE)
             .dateTime(DEFAULT_DATE_TIME)
             .mimeType(DEFAULT_MIME_TYPE)
             .status(DEFAULT_STATUS);
@@ -132,6 +138,7 @@ public class AirplaneTripImportResourceIntTest {
         assertThat(airplaneTripImportList).hasSize(databaseSizeBeforeCreate + 1);
         AirplaneTripImport testAirplaneTripImport = airplaneTripImportList.get(airplaneTripImportList.size() - 1);
         assertThat(testAirplaneTripImport.getFile()).isEqualTo(DEFAULT_FILE);
+        assertThat(testAirplaneTripImport.getAirline()).isEqualTo(DEFAULT_AIRLINE);
         assertThat(testAirplaneTripImport.getDateTime()).isEqualTo(DEFAULT_DATE_TIME);
         assertThat(testAirplaneTripImport.getMimeType()).isEqualTo(DEFAULT_MIME_TYPE);
         assertThat(testAirplaneTripImport.getStatus()).isEqualTo(DEFAULT_STATUS);
@@ -168,11 +175,12 @@ public class AirplaneTripImportResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(airplaneTripImport.getId().intValue())))
             .andExpect(jsonPath("$.[*].file").value(hasItem(DEFAULT_FILE.toString())))
+            .andExpect(jsonPath("$.[*].airline").value(hasItem(DEFAULT_AIRLINE.toString())))
             .andExpect(jsonPath("$.[*].dateTime").value(hasItem(sameInstant(DEFAULT_DATE_TIME))))
             .andExpect(jsonPath("$.[*].mimeType").value(hasItem(DEFAULT_MIME_TYPE.toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
     }
-    
+
     @Test
     @Transactional
     public void getAirplaneTripImport() throws Exception {
@@ -185,6 +193,7 @@ public class AirplaneTripImportResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(airplaneTripImport.getId().intValue()))
             .andExpect(jsonPath("$.file").value(DEFAULT_FILE.toString()))
+            .andExpect(jsonPath("$.airline").value(DEFAULT_AIRLINE.toString()))
             .andExpect(jsonPath("$.dateTime").value(sameInstant(DEFAULT_DATE_TIME)))
             .andExpect(jsonPath("$.mimeType").value(DEFAULT_MIME_TYPE.toString()))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
@@ -212,6 +221,7 @@ public class AirplaneTripImportResourceIntTest {
         em.detach(updatedAirplaneTripImport);
         updatedAirplaneTripImport
             .file(UPDATED_FILE)
+            .airline(UPDATED_AIRLINE)
             .dateTime(UPDATED_DATE_TIME)
             .mimeType(UPDATED_MIME_TYPE)
             .status(UPDATED_STATUS);
@@ -226,6 +236,7 @@ public class AirplaneTripImportResourceIntTest {
         assertThat(airplaneTripImportList).hasSize(databaseSizeBeforeUpdate);
         AirplaneTripImport testAirplaneTripImport = airplaneTripImportList.get(airplaneTripImportList.size() - 1);
         assertThat(testAirplaneTripImport.getFile()).isEqualTo(UPDATED_FILE);
+        assertThat(testAirplaneTripImport.getAirline()).isEqualTo(UPDATED_AIRLINE);
         assertThat(testAirplaneTripImport.getDateTime()).isEqualTo(UPDATED_DATE_TIME);
         assertThat(testAirplaneTripImport.getMimeType()).isEqualTo(UPDATED_MIME_TYPE);
         assertThat(testAirplaneTripImport.getStatus()).isEqualTo(UPDATED_STATUS);

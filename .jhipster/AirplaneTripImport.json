@@ -8,8 +8,12 @@
             "fieldType": "String"
         },
         {
+            "fieldName": "airline",
+            "fieldType": "String"
+        },
+        {
             "fieldName": "dateTime",
-            "fieldType": "ZonedDateTime"
+            "fieldType": "Instant"
         },
         {
             "fieldName": "mimeType",

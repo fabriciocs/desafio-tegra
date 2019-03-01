@@ -1,0 +1,65 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="airplanetrip">
+            <h2><span>Airplanetrip</span> {{airplanetrip.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>Flight</span></dt>
+                <dd>
+                    <span>{{airplanetrip.flight}}</span>
+                </dd>
+                <dt><span>Departure Date</span></dt>
+                <dd>
+                    <span>{{airplanetrip.departureDate}}</span>
+                </dd>
+                <dt><span>Arrival Date</span></dt>
+                <dd>
+                    <span>{{airplanetrip.arrivalDate}}</span>
+                </dd>
+                <dt><span>Departure Time</span></dt>
+                <dd>
+                    <span>{{airplanetrip.departureTime}}</span>
+                </dd>
+                <dt><span>Arrival Time</span></dt>
+                <dd>
+                    <span>{{airplanetrip.arrivalTime}}</span>
+                </dd>
+                <dt><span>Price</span></dt>
+                <dd>
+                    <span>{{airplanetrip.price}}</span>
+                </dd>
+                <dt><span>Departure Airport</span></dt>
+                <dd>
+                    <div *ngIf="airplanetrip.departureAirport">
+                        <a [routerLink]="['/airport', airplanetrip.departureAirport?.id, 'view']">{{airplanetrip.departureAirport?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span>Arrival Airport</span></dt>
+                <dd>
+                    <div *ngIf="airplanetrip.arrivalAirport">
+                        <a [routerLink]="['/airport', airplanetrip.arrivalAirport?.id, 'view']">{{airplanetrip.arrivalAirport?.airport}}</a>
+                    </div>
+                </dd>
+                <dt><span>Airline</span></dt>
+                <dd>
+                    <div *ngIf="airplanetrip.airline">
+                        <a [routerLink]="['/airline', airplanetrip.airline?.id, 'view']">{{airplanetrip.airline?.name}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/airplanetrip', airplanetrip.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,121 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+            <h2 id="jhi-airplanetrip-heading">Create or edit a Airplanetrip</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!airplanetrip.id">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id"
+                        [(ngModel)]="airplanetrip.id" readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_flight">Flight</label>
+                    <input type="text" class="form-control" name="flight" id="field_flight"
+                        [(ngModel)]="airplanetrip.flight" required minlength="6" maxlength="8" pattern="^[A-Z0-9]+$"/>
+                    <div [hidden]="!(editForm.controls.flight?.dirty && editForm.controls.flight?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.flight?.errors?.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.flight?.errors?.minlength">
+                        This field is required to be at least 6 characters.
+                        </small>
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.flight?.errors?.maxlength">
+                        This field cannot be longer than 8 characters.
+                        </small>
+                        <small class="form-text text-danger"
+                            [hidden]="!editForm.controls.flight?.errors?.pattern">
+                            This field should follow pattern for "Flight".
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_departureDate">Departure Date</label>
+                    <div class="input-group">
+                        <input id="field_departureDate" type="text" class="form-control" name="departureDate" ngbDatepicker  #departureDateDp="ngbDatepicker" [(ngModel)]="airplanetrip.departureDate"
+                        />
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="departureDateDp.toggle()"><fa-icon [icon]="'calendar-alt'"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_arrivalDate">Arrival Date</label>
+                    <div class="input-group">
+                        <input id="field_arrivalDate" type="text" class="form-control" name="arrivalDate" ngbDatepicker  #arrivalDateDp="ngbDatepicker" [(ngModel)]="airplanetrip.arrivalDate"
+                        />
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="arrivalDateDp.toggle()"><fa-icon [icon]="'calendar-alt'"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_departureTime">Departure Time</label>
+                    <div class="d-flex">
+                        <input id="field_departureTime" type="datetime-local" class="form-control" name="departureTime" [(ngModel)]="departureTime" placeholder="YYYY-MM-DD HH:mm"
+                        />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_arrivalTime">Arrival Time</label>
+                    <div class="d-flex">
+                        <input id="field_arrivalTime" type="datetime-local" class="form-control" name="arrivalTime" [(ngModel)]="arrivalTime" placeholder="YYYY-MM-DD HH:mm"
+                        />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_price">Price</label>
+                    <input type="number" class="form-control" name="price" id="field_price"
+                        [(ngModel)]="airplanetrip.price" required min="0.00" jhiMin="0.00"/>
+                    <div [hidden]="!(editForm.controls.price?.dirty && editForm.controls.price?.invalid)">
+                        <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.price?.errors?.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                            [hidden]="!editForm.controls.price?.errors?.min">
+                            This field should be at least 0.00.
+                        </small>
+                        <small class="form-text text-danger"
+                            [hidden]="!editForm.controls.price?.errors?.number">
+                            This field should be a number.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_departureAirport">Departure Airport</label>
+                    <select class="form-control" id="field_departureAirport" name="departureAirport" [(ngModel)]="airplanetrip.departureAirport" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="airportOption.id === airplanetrip.departureAirport?.id ? airplanetrip.departureAirport : airportOption" *ngFor="let airportOption of airports; trackBy: trackAirportById">{{airportOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_arrivalAirport">Arrival Airport</label>
+                    <select class="form-control" id="field_arrivalAirport" name="arrivalAirport" [(ngModel)]="airplanetrip.arrivalAirport" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="airportOption.id === airplanetrip.arrivalAirport?.id ? airplanetrip.arrivalAirport : airportOption" *ngFor="let airportOption of airports; trackBy: trackAirportById">{{airportOption.airport}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_airline">Airline</label>
+                    <select class="form-control" id="field_airline" name="airline" [(ngModel)]="airplanetrip.airline" >
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="airlineOption.id === airplanetrip.airline?.id ? airplanetrip.airline : airlineOption" *ngFor="let airlineOption of airlines; trackBy: trackAirlineById">{{airlineOption.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span>Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span>Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

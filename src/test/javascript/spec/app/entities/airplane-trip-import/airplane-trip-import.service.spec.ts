@@ -25,7 +25,7 @@ describe('Service Tests', () => {
             httpMock = injector.get(HttpTestingController);
             currentDate = moment();
 
-            elemDefault = new AirplaneTripImport(0, 'AAAAAAA', currentDate, 'AAAAAAA', ImportStatus.SUCCESS);
+            elemDefault = new AirplaneTripImport(0, 'AAAAAAA', 'AAAAAAA', currentDate, 'AAAAAAA', ImportStatus.SUCCESS);
         });
 
         describe('Service methods', async () => {
@@ -71,6 +71,7 @@ describe('Service Tests', () => {
                 const returnedFromService = Object.assign(
                     {
                         file: 'BBBBBB',
+                        airline: 'BBBBBB',
                         dateTime: currentDate.format(DATE_TIME_FORMAT),
                         mimeType: 'BBBBBB',
                         status: 'BBBBBB'
@@ -96,6 +97,7 @@ describe('Service Tests', () => {
                 const returnedFromService = Object.assign(
                     {
                         file: 'BBBBBB',
+                        airline: 'BBBBBB',
                         dateTime: currentDate.format(DATE_TIME_FORMAT),
                         mimeType: 'BBBBBB',
                         status: 'BBBBBB'

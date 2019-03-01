@@ -16,6 +16,7 @@
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
             <th jhiSortBy="id"><span>ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="file"><span>File</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="airline"><span>Airline</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="dateTime"><span>Date Time</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="mimeType"><span>Mime Type</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="status"><span>Status</span> <fa-icon [icon]="'sort'"></fa-icon></th>
@@ -26,6 +27,7 @@
             <tr *ngFor="let airplaneTripImport of airplaneTripImports ;trackBy: trackId">
                 <td><a [routerLink]="['/airplane-trip-import', airplaneTripImport.id, 'view' ]">{{airplaneTripImport.id}}</a></td>
                 <td>{{airplaneTripImport.file}}</td>
+                <td>{{airplaneTripImport.airline}}</td>
                 <td>{{airplaneTripImport.dateTime | date:'medium'}}</td>
                 <td>{{airplaneTripImport.mimeType}}</td>
                 <td>{{airplaneTripImport.status}}</td>

@@ -1,6 +1,6 @@
 package br.com.tegra.web.rest;
 import br.com.tegra.domain.Airline;
-import br.com.tegra.repository.AirlineRepository;
+import br.com.tegra.service.AirlineService;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
 import br.com.tegra.web.rest.util.HeaderUtil;
 import br.com.tegra.web.rest.util.PaginationUtil;
@@ -31,10 +31,10 @@ public class AirlineResource {
 
     private static final String ENTITY_NAME = "airline";
 
-    private final AirlineRepository airlineRepository;
+    private final AirlineService airlineService;
 
-    public AirlineResource(AirlineRepository airlineRepository) {
-        this.airlineRepository = airlineRepository;
+    public AirlineResource(AirlineService airlineService) {
+        this.airlineService = airlineService;
     }
 
     /**
@@ -50,7 +50,7 @@ public class AirlineResource {
         if (airline.getId() != null) {
             throw new BadRequestAlertException("A new airline cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Airline result = airlineRepository.save(airline);
+        Airline result = airlineService.save(airline);
         return ResponseEntity.created(new URI("/api/airlines/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -71,7 +71,7 @@ public class AirlineResource {
         if (airline.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Airline result = airlineRepository.save(airline);
+        Airline result = airlineService.save(airline);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, airline.getId().toString()))
             .body(result);
@@ -86,7 +86,7 @@ public class AirlineResource {
     @GetMapping("/airlines")
     public ResponseEntity<List<Airline>> getAllAirlines(Pageable pageable) {
         log.debug("REST request to get a page of Airlines");
-        Page<Airline> page = airlineRepository.findAll(pageable);
+        Page<Airline> page = airlineService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/airlines");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -100,7 +100,7 @@ public class AirlineResource {
     @GetMapping("/airlines/{id}")
     public ResponseEntity<Airline> getAirline(@PathVariable Long id) {
         log.debug("REST request to get Airline : {}", id);
-        Optional<Airline> airline = airlineRepository.findById(id);
+        Optional<Airline> airline = airlineService.findOne(id);
         return ResponseUtil.wrapOrNotFound(airline);
     }
 
@@ -113,7 +113,7 @@ public class AirlineResource {
     @DeleteMapping("/airlines/{id}")
     public ResponseEntity<Void> deleteAirline(@PathVariable Long id) {
         log.debug("REST request to delete Airline : {}", id);
-        airlineRepository.deleteById(id);
+        airlineService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

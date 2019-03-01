@@ -26,6 +26,10 @@
                 <constraints nullable="true" />
             </column>
 
+            <column name="airline" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
             <column name="date_time" type="datetime">
                 <constraints nullable="true" />
             </column>

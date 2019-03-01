@@ -27,6 +27,7 @@ export class AirplaneTripImportUpdatePage {
     saveButton = element(by.id('save-entity'));
     cancelButton = element(by.id('cancel-save'));
     fileInput = element(by.id('field_file'));
+    airlineInput = element(by.id('field_airline'));
     dateTimeInput = element(by.id('field_dateTime'));
     mimeTypeInput = element(by.id('field_mimeType'));
     statusSelect = element(by.id('field_status'));
@@ -41,6 +42,14 @@ export class AirplaneTripImportUpdatePage {
 
     async getFileInput() {
         return this.fileInput.getAttribute('value');
+    }
+
+    async setAirlineInput(airline) {
+        await this.airlineInput.sendKeys(airline);
+    }
+
+    async getAirlineInput() {
+        return this.airlineInput.getAttribute('value');
     }
 
     async setDateTimeInput(dateTime) {

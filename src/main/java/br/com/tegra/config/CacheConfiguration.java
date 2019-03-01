@@ -2,6 +2,7 @@ package br.com.tegra.config;
 
 import java.time.Duration;
 
+import br.com.tegra.domain.AirplaneTrip;
 import org.ehcache.config.builders.*;
 import org.ehcache.jsr107.Eh107Configuration;
 
@@ -38,7 +39,12 @@ public class CacheConfiguration {
             cm.createCache(br.com.tegra.domain.User.class.getName(), jcacheConfiguration);
             cm.createCache(br.com.tegra.domain.Authority.class.getName(), jcacheConfiguration);
             cm.createCache(br.com.tegra.domain.User.class.getName() + ".authorities", jcacheConfiguration);
+            cm.createCache(br.com.tegra.domain.AirplaneTripImport.class.getName(), jcacheConfiguration);
+            cm.createCache(br.com.tegra.domain.Airline.class.getName(), jcacheConfiguration);
+            cm.createCache(br.com.tegra.domain.Airport.class.getName(), jcacheConfiguration);
+            cm.createCache(AirplaneTrip.class.getName(), jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
+
         };
     }
 }

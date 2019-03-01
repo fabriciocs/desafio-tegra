@@ -1,22 +1,36 @@
 package br.com.tegra.web.rest;
+
 import br.com.tegra.domain.AirplaneTripImport;
+import br.com.tegra.domain.enumeration.ImportStatus;
 import br.com.tegra.service.AirplaneTripImportService;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
 import br.com.tegra.web.rest.util.HeaderUtil;
 import br.com.tegra.web.rest.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import sun.tools.java.ClassPath;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,20 +46,44 @@ public class AirplaneTripImportResource {
     private static final String ENTITY_NAME = "airplaneTripImport";
 
     private final AirplaneTripImportService airplaneTripImportService;
+    private final HttpServletRequest request;
 
-    public AirplaneTripImportResource(AirplaneTripImportService airplaneTripImportService) {
+    public AirplaneTripImportResource(AirplaneTripImportService airplaneTripImportService, HttpServletRequest request) {
         this.airplaneTripImportService = airplaneTripImportService;
+        this.request = request;
     }
+
+
+    private File getFile(MultipartFile file) throws IOException {
+        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
+        String fileName = date + file.getOriginalFilename();
+        File diskFile = new File(request.getServletContext().getRealPath("/upload"), fileName);
+        file.transferTo(diskFile);
+       return  diskFile;
+
+    }
+
 
     /**
      * POST  /airplane-trip-imports : Create a new airplaneTripImport.
      *
-     * @param airplaneTripImport the airplaneTripImport to create
+     * @param file the file to create an airplaneTripImport
      * @return the ResponseEntity with status 201 (Created) and with body the new airplaneTripImport, or with status 400 (Bad Request) if the airplaneTripImport has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/airplane-trip-imports")
-    public ResponseEntity<AirplaneTripImport> createAirplaneTripImport(@RequestBody AirplaneTripImport airplaneTripImport) throws URISyntaxException {
+    public ResponseEntity<AirplaneTripImport> createAirplaneTripImport(@RequestParam("file") MultipartFile file, @RequestParam("airline") String airline) throws URISyntaxException, IOException {
+        //ClassPathResource cpr =
+        File diskFile = this.getFile(file);
+        //file.transferTo(diskFile);
+
+        AirplaneTripImport airplaneTripImport = new AirplaneTripImport();
+        airplaneTripImport.setFile(diskFile.getName());
+        airplaneTripImport.setDateTime(Instant.now());
+        airplaneTripImport.setMimeType(new Tika().detect(diskFile));
+        airplaneTripImport.setStatus(ImportStatus.WAITING);
+        airplaneTripImport.setAirline(airline);
+
         log.debug("REST request to save AirplaneTripImport : {}", airplaneTripImport);
         if (airplaneTripImport.getId() != null) {
             throw new BadRequestAlertException("A new airplaneTripImport cannot already have an ID", ENTITY_NAME, "idexists");
@@ -90,6 +128,23 @@ public class AirplaneTripImportResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/airplane-trip-imports");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+
+    /**
+     * POST  /airplane-trip-imports/:id/import : import data to database.
+     *
+     * @param id the id of the airplaneTripImport to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the airplaneTripImport, or with status 404 (Not Found)
+     */
+    @PostMapping("/airplane-trip-imports/{id}/import")
+    public ResponseEntity<AirplaneTripImport> importTheAirplaneTripImport(@PathVariable Long id) {
+        log.debug("REST request to get AirplaneTripImport : {}", id);
+        Optional<AirplaneTripImport> airplaneTripImport = airplaneTripImportService.findOne(id);
+        if (airplaneTripImport.isPresent()) {
+            return ResponseUtil.wrapOrNotFound(airplaneTripImportService.importTrips(airplaneTripImport.get()));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 
     /**
      * GET  /airplane-trip-imports/:id : get the "id" airplaneTripImport.

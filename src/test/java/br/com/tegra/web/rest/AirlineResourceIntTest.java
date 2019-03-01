@@ -4,6 +4,7 @@ import br.com.tegra.TesteApp;
 
 import br.com.tegra.domain.Airline;
 import br.com.tegra.repository.AirlineRepository;
+import br.com.tegra.service.AirlineService;
 import br.com.tegra.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -47,6 +48,9 @@ public class AirlineResourceIntTest {
     private AirlineRepository airlineRepository;
 
     @Autowired
+    private AirlineService airlineService;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -68,7 +72,7 @@ public class AirlineResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final AirlineResource airlineResource = new AirlineResource(airlineRepository);
+        final AirlineResource airlineResource = new AirlineResource(airlineService);
         this.restAirlineMockMvc = MockMvcBuilders.standaloneSetup(airlineResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -171,7 +175,7 @@ public class AirlineResourceIntTest {
     @Transactional
     public void updateAirline() throws Exception {
         // Initialize the database
-        airlineRepository.saveAndFlush(airline);
+        airlineService.save(airline);
 
         int databaseSizeBeforeUpdate = airlineRepository.findAll().size();
 
@@ -216,7 +220,7 @@ public class AirlineResourceIntTest {
     @Transactional
     public void deleteAirline() throws Exception {
         // Initialize the database
-        airlineRepository.saveAndFlush(airline);
+        airlineService.save(airline);
 
         int databaseSizeBeforeDelete = airlineRepository.findAll().size();
 

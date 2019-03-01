@@ -15,7 +15,7 @@
     <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
 
     <!--
-        Added the entity AirplaneTrip.
+        Added the entity Airplanetrip.
     -->
     <changeSet id="20190228154548-1" author="jhipster">
         <createTable tableName="airplane_trip">

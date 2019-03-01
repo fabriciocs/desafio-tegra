@@ -45,11 +45,13 @@ describe('AirplaneTripImport e2e test', () => {
         await airplaneTripImportComponentsPage.clickOnCreateButton();
         await promise.all([
             airplaneTripImportUpdatePage.setFileInput('file'),
+            airplaneTripImportUpdatePage.setAirlineInput('airline'),
             airplaneTripImportUpdatePage.setDateTimeInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
             airplaneTripImportUpdatePage.setMimeTypeInput('mimeType'),
             airplaneTripImportUpdatePage.statusSelectLastOption()
         ]);
         expect(await airplaneTripImportUpdatePage.getFileInput()).to.eq('file');
+        expect(await airplaneTripImportUpdatePage.getAirlineInput()).to.eq('airline');
         expect(await airplaneTripImportUpdatePage.getDateTimeInput()).to.contain('2001-01-01T02:30');
         expect(await airplaneTripImportUpdatePage.getMimeTypeInput()).to.eq('mimeType');
         await airplaneTripImportUpdatePage.save();

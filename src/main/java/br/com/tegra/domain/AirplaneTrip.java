@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * A AirplaneTrip.
+ * A Airplanetrip.
  */
 @Entity
 @Table(name = "airplane_trip")
@@ -52,12 +52,15 @@ public class AirplaneTrip implements Serializable {
     private BigDecimal price;
 
     @ManyToOne
+    @JsonIgnoreProperties("airplanetrips")
     private Airport departureAirport;
 
     @ManyToOne
+    @JsonIgnoreProperties("airplanetrips")
     private Airport arrivalAirport;
 
     @ManyToOne
+    @JsonIgnoreProperties("airplanetrips")
     private Airline airline;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
@@ -195,11 +198,11 @@ public class AirplaneTrip implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AirplaneTrip airplaneTrip = (AirplaneTrip) o;
-        if (airplaneTrip.getId() == null || getId() == null) {
+        AirplaneTrip airplanetrip = (AirplaneTrip) o;
+        if (airplanetrip.getId() == null || getId() == null) {
             return false;
         }
-        return Objects.equals(getId(), airplaneTrip.getId());
+        return Objects.equals(getId(), airplanetrip.getId());
     }
 
     @Override
@@ -209,7 +212,7 @@ public class AirplaneTrip implements Serializable {
 
     @Override
     public String toString() {
-        return "AirplaneTrip{" +
+        return "Airplanetrip{" +
             "id=" + getId() +
             ", flight='" + getFlight() + "'" +
             ", departureDate='" + getDepartureDate() + "'" +

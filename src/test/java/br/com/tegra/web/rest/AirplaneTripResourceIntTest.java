@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Test class for the AirplaneTripResource REST controller.
+ * Test class for the AirplanetripResource REST controller.
  *
  * @see AirplaneTripResource
  */
@@ -65,10 +65,10 @@ public class AirplaneTripResourceIntTest {
     private static final BigDecimal UPDATED_PRICE = new BigDecimal(1);
 
     @Autowired
-    private AirplaneTripRepository airplaneTripRepository;
+    private AirplaneTripRepository airplanetripRepository;
 
     @Autowired
-    private AirplaneTripService airplaneTripService;
+    private AirplaneTripService airplanetripService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -85,15 +85,15 @@ public class AirplaneTripResourceIntTest {
     @Autowired
     private Validator validator;
 
-    private MockMvc restAirplaneTripMockMvc;
+    private MockMvc restAirplanetripMockMvc;
 
-    private AirplaneTrip airplaneTrip;
+    private AirplaneTrip airplanetrip;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final AirplaneTripResource airplaneTripResource = new AirplaneTripResource(airplaneTripService);
-        this.restAirplaneTripMockMvc = MockMvcBuilders.standaloneSetup(airplaneTripResource)
+        final AirplaneTripResource airplanetripResource = new AirplaneTripResource(airplanetripService);
+        this.restAirplanetripMockMvc = MockMvcBuilders.standaloneSetup(airplanetripResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
             .setConversionService(createFormattingConversionService())
@@ -108,110 +108,110 @@ public class AirplaneTripResourceIntTest {
      * if they test an entity which requires the current entity.
      */
     public static AirplaneTrip createEntity(EntityManager em) {
-        AirplaneTrip airplaneTrip = new AirplaneTrip()
+        AirplaneTrip airplanetrip = new AirplaneTrip()
             .flight(DEFAULT_FLIGHT)
             .departureDate(DEFAULT_DEPARTURE_DATE)
             .arrivalDate(DEFAULT_ARRIVAL_DATE)
             .departureTime(DEFAULT_DEPARTURE_TIME)
             .arrivalTime(DEFAULT_ARRIVAL_TIME)
             .price(DEFAULT_PRICE);
-        return airplaneTrip;
+        return airplanetrip;
     }
 
     @Before
     public void initTest() {
-        airplaneTrip = createEntity(em);
+        airplanetrip = createEntity(em);
     }
 
     @Test
     @Transactional
-    public void createAirplaneTrip() throws Exception {
-        int databaseSizeBeforeCreate = airplaneTripRepository.findAll().size();
+    public void createAirplanetrip() throws Exception {
+        int databaseSizeBeforeCreate = airplanetripRepository.findAll().size();
 
-        // Create the AirplaneTrip
-        restAirplaneTripMockMvc.perform(post("/api/airplane-trips")
+        // Create the Airplanetrip
+        restAirplanetripMockMvc.perform(post("/api/airplanetrips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airplaneTrip)))
+            .content(TestUtil.convertObjectToJsonBytes(airplanetrip)))
             .andExpect(status().isCreated());
 
-        // Validate the AirplaneTrip in the database
-        List<AirplaneTrip> airplaneTripList = airplaneTripRepository.findAll();
-        assertThat(airplaneTripList).hasSize(databaseSizeBeforeCreate + 1);
-        AirplaneTrip testAirplaneTrip = airplaneTripList.get(airplaneTripList.size() - 1);
-        assertThat(testAirplaneTrip.getFlight()).isEqualTo(DEFAULT_FLIGHT);
-        assertThat(testAirplaneTrip.getDepartureDate()).isEqualTo(DEFAULT_DEPARTURE_DATE);
-        assertThat(testAirplaneTrip.getArrivalDate()).isEqualTo(DEFAULT_ARRIVAL_DATE);
-        assertThat(testAirplaneTrip.getDepartureTime()).isEqualTo(DEFAULT_DEPARTURE_TIME);
-        assertThat(testAirplaneTrip.getArrivalTime()).isEqualTo(DEFAULT_ARRIVAL_TIME);
-        assertThat(testAirplaneTrip.getPrice()).isEqualTo(DEFAULT_PRICE);
+        // Validate the Airplanetrip in the database
+        List<AirplaneTrip> airplanetripList = airplanetripRepository.findAll();
+        assertThat(airplanetripList).hasSize(databaseSizeBeforeCreate + 1);
+        AirplaneTrip testAirplanetrip = airplanetripList.get(airplanetripList.size() - 1);
+        assertThat(testAirplanetrip.getFlight()).isEqualTo(DEFAULT_FLIGHT);
+        assertThat(testAirplanetrip.getDepartureDate()).isEqualTo(DEFAULT_DEPARTURE_DATE);
+        assertThat(testAirplanetrip.getArrivalDate()).isEqualTo(DEFAULT_ARRIVAL_DATE);
+        assertThat(testAirplanetrip.getDepartureTime()).isEqualTo(DEFAULT_DEPARTURE_TIME);
+        assertThat(testAirplanetrip.getArrivalTime()).isEqualTo(DEFAULT_ARRIVAL_TIME);
+        assertThat(testAirplanetrip.getPrice()).isEqualTo(DEFAULT_PRICE);
     }
 
     @Test
     @Transactional
-    public void createAirplaneTripWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = airplaneTripRepository.findAll().size();
+    public void createAirplanetripWithExistingId() throws Exception {
+        int databaseSizeBeforeCreate = airplanetripRepository.findAll().size();
 
-        // Create the AirplaneTrip with an existing ID
-        airplaneTrip.setId(1L);
+        // Create the Airplanetrip with an existing ID
+        airplanetrip.setId(1L);
 
         // An entity with an existing ID cannot be created, so this API call must fail
-        restAirplaneTripMockMvc.perform(post("/api/airplane-trips")
+        restAirplanetripMockMvc.perform(post("/api/airplanetrips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airplaneTrip)))
+            .content(TestUtil.convertObjectToJsonBytes(airplanetrip)))
             .andExpect(status().isBadRequest());
 
-        // Validate the AirplaneTrip in the database
-        List<AirplaneTrip> airplaneTripList = airplaneTripRepository.findAll();
-        assertThat(airplaneTripList).hasSize(databaseSizeBeforeCreate);
+        // Validate the Airplanetrip in the database
+        List<AirplaneTrip> airplanetripList = airplanetripRepository.findAll();
+        assertThat(airplanetripList).hasSize(databaseSizeBeforeCreate);
     }
 
     @Test
     @Transactional
     public void checkFlightIsRequired() throws Exception {
-        int databaseSizeBeforeTest = airplaneTripRepository.findAll().size();
+        int databaseSizeBeforeTest = airplanetripRepository.findAll().size();
         // set the field null
-        airplaneTrip.setFlight(null);
+        airplanetrip.setFlight(null);
 
-        // Create the AirplaneTrip, which fails.
+        // Create the Airplanetrip, which fails.
 
-        restAirplaneTripMockMvc.perform(post("/api/airplane-trips")
+        restAirplanetripMockMvc.perform(post("/api/airplanetrips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airplaneTrip)))
+            .content(TestUtil.convertObjectToJsonBytes(airplanetrip)))
             .andExpect(status().isBadRequest());
 
-        List<AirplaneTrip> airplaneTripList = airplaneTripRepository.findAll();
-        assertThat(airplaneTripList).hasSize(databaseSizeBeforeTest);
+        List<AirplaneTrip> airplanetripList = airplanetripRepository.findAll();
+        assertThat(airplanetripList).hasSize(databaseSizeBeforeTest);
     }
 
     @Test
     @Transactional
     public void checkPriceIsRequired() throws Exception {
-        int databaseSizeBeforeTest = airplaneTripRepository.findAll().size();
+        int databaseSizeBeforeTest = airplanetripRepository.findAll().size();
         // set the field null
-        airplaneTrip.setPrice(null);
+        airplanetrip.setPrice(null);
 
-        // Create the AirplaneTrip, which fails.
+        // Create the Airplanetrip, which fails.
 
-        restAirplaneTripMockMvc.perform(post("/api/airplane-trips")
+        restAirplanetripMockMvc.perform(post("/api/airplanetrips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airplaneTrip)))
+            .content(TestUtil.convertObjectToJsonBytes(airplanetrip)))
             .andExpect(status().isBadRequest());
 
-        List<AirplaneTrip> airplaneTripList = airplaneTripRepository.findAll();
-        assertThat(airplaneTripList).hasSize(databaseSizeBeforeTest);
+        List<AirplaneTrip> airplanetripList = airplanetripRepository.findAll();
+        assertThat(airplanetripList).hasSize(databaseSizeBeforeTest);
     }
 
     @Test
     @Transactional
-    public void getAllAirplaneTrips() throws Exception {
+    public void getAllAirplanetrips() throws Exception {
         // Initialize the database
-        airplaneTripRepository.saveAndFlush(airplaneTrip);
+        airplanetripRepository.saveAndFlush(airplanetrip);
 
-        // Get all the airplaneTripList
-        restAirplaneTripMockMvc.perform(get("/api/airplane-trips?sort=id,desc"))
+        // Get all the airplanetripList
+        restAirplanetripMockMvc.perform(get("/api/airplanetrips?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(airplaneTrip.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(airplanetrip.getId().intValue())))
             .andExpect(jsonPath("$.[*].flight").value(hasItem(DEFAULT_FLIGHT.toString())))
             .andExpect(jsonPath("$.[*].departureDate").value(hasItem(DEFAULT_DEPARTURE_DATE.toString())))
             .andExpect(jsonPath("$.[*].arrivalDate").value(hasItem(DEFAULT_ARRIVAL_DATE.toString())))
@@ -222,15 +222,15 @@ public class AirplaneTripResourceIntTest {
     
     @Test
     @Transactional
-    public void getAirplaneTrip() throws Exception {
+    public void getAirplanetrip() throws Exception {
         // Initialize the database
-        airplaneTripRepository.saveAndFlush(airplaneTrip);
+        airplanetripRepository.saveAndFlush(airplanetrip);
 
-        // Get the airplaneTrip
-        restAirplaneTripMockMvc.perform(get("/api/airplane-trips/{id}", airplaneTrip.getId()))
+        // Get the airplanetrip
+        restAirplanetripMockMvc.perform(get("/api/airplanetrips/{id}", airplanetrip.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.id").value(airplaneTrip.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(airplanetrip.getId().intValue()))
             .andExpect(jsonPath("$.flight").value(DEFAULT_FLIGHT.toString()))
             .andExpect(jsonPath("$.departureDate").value(DEFAULT_DEPARTURE_DATE.toString()))
             .andExpect(jsonPath("$.arrivalDate").value(DEFAULT_ARRIVAL_DATE.toString()))
@@ -241,25 +241,25 @@ public class AirplaneTripResourceIntTest {
 
     @Test
     @Transactional
-    public void getNonExistingAirplaneTrip() throws Exception {
-        // Get the airplaneTrip
-        restAirplaneTripMockMvc.perform(get("/api/airplane-trips/{id}", Long.MAX_VALUE))
+    public void getNonExistingAirplanetrip() throws Exception {
+        // Get the airplanetrip
+        restAirplanetripMockMvc.perform(get("/api/airplanetrips/{id}", Long.MAX_VALUE))
             .andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateAirplaneTrip() throws Exception {
+    public void updateAirplanetrip() throws Exception {
         // Initialize the database
-        airplaneTripService.save(airplaneTrip);
+        airplanetripService.save(airplanetrip);
 
-        int databaseSizeBeforeUpdate = airplaneTripRepository.findAll().size();
+        int databaseSizeBeforeUpdate = airplanetripRepository.findAll().size();
 
-        // Update the airplaneTrip
-        AirplaneTrip updatedAirplaneTrip = airplaneTripRepository.findById(airplaneTrip.getId()).get();
-        // Disconnect from session so that the updates on updatedAirplaneTrip are not directly saved in db
-        em.detach(updatedAirplaneTrip);
-        updatedAirplaneTrip
+        // Update the airplanetrip
+        AirplaneTrip updatedAirplanetrip = airplanetripRepository.findById(airplanetrip.getId()).get();
+        // Disconnect from session so that the updates on updatedAirplanetrip are not directly saved in db
+        em.detach(updatedAirplanetrip);
+        updatedAirplanetrip
             .flight(UPDATED_FLIGHT)
             .departureDate(UPDATED_DEPARTURE_DATE)
             .arrivalDate(UPDATED_ARRIVAL_DATE)
@@ -267,71 +267,71 @@ public class AirplaneTripResourceIntTest {
             .arrivalTime(UPDATED_ARRIVAL_TIME)
             .price(UPDATED_PRICE);
 
-        restAirplaneTripMockMvc.perform(put("/api/airplane-trips")
+        restAirplanetripMockMvc.perform(put("/api/airplanetrips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(updatedAirplaneTrip)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedAirplanetrip)))
             .andExpect(status().isOk());
 
-        // Validate the AirplaneTrip in the database
-        List<AirplaneTrip> airplaneTripList = airplaneTripRepository.findAll();
-        assertThat(airplaneTripList).hasSize(databaseSizeBeforeUpdate);
-        AirplaneTrip testAirplaneTrip = airplaneTripList.get(airplaneTripList.size() - 1);
-        assertThat(testAirplaneTrip.getFlight()).isEqualTo(UPDATED_FLIGHT);
-        assertThat(testAirplaneTrip.getDepartureDate()).isEqualTo(UPDATED_DEPARTURE_DATE);
-        assertThat(testAirplaneTrip.getArrivalDate()).isEqualTo(UPDATED_ARRIVAL_DATE);
-        assertThat(testAirplaneTrip.getDepartureTime()).isEqualTo(UPDATED_DEPARTURE_TIME);
-        assertThat(testAirplaneTrip.getArrivalTime()).isEqualTo(UPDATED_ARRIVAL_TIME);
-        assertThat(testAirplaneTrip.getPrice()).isEqualTo(UPDATED_PRICE);
+        // Validate the Airplanetrip in the database
+        List<AirplaneTrip> airplanetripList = airplanetripRepository.findAll();
+        assertThat(airplanetripList).hasSize(databaseSizeBeforeUpdate);
+        AirplaneTrip testAirplanetrip = airplanetripList.get(airplanetripList.size() - 1);
+        assertThat(testAirplanetrip.getFlight()).isEqualTo(UPDATED_FLIGHT);
+        assertThat(testAirplanetrip.getDepartureDate()).isEqualTo(UPDATED_DEPARTURE_DATE);
+        assertThat(testAirplanetrip.getArrivalDate()).isEqualTo(UPDATED_ARRIVAL_DATE);
+        assertThat(testAirplanetrip.getDepartureTime()).isEqualTo(UPDATED_DEPARTURE_TIME);
+        assertThat(testAirplanetrip.getArrivalTime()).isEqualTo(UPDATED_ARRIVAL_TIME);
+        assertThat(testAirplanetrip.getPrice()).isEqualTo(UPDATED_PRICE);
     }
 
     @Test
     @Transactional
-    public void updateNonExistingAirplaneTrip() throws Exception {
-        int databaseSizeBeforeUpdate = airplaneTripRepository.findAll().size();
+    public void updateNonExistingAirplanetrip() throws Exception {
+        int databaseSizeBeforeUpdate = airplanetripRepository.findAll().size();
 
-        // Create the AirplaneTrip
+        // Create the Airplanetrip
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restAirplaneTripMockMvc.perform(put("/api/airplane-trips")
+        restAirplanetripMockMvc.perform(put("/api/airplanetrips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airplaneTrip)))
+            .content(TestUtil.convertObjectToJsonBytes(airplanetrip)))
             .andExpect(status().isBadRequest());
 
-        // Validate the AirplaneTrip in the database
-        List<AirplaneTrip> airplaneTripList = airplaneTripRepository.findAll();
-        assertThat(airplaneTripList).hasSize(databaseSizeBeforeUpdate);
+        // Validate the Airplanetrip in the database
+        List<AirplaneTrip> airplanetripList = airplanetripRepository.findAll();
+        assertThat(airplanetripList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
-    public void deleteAirplaneTrip() throws Exception {
+    public void deleteAirplanetrip() throws Exception {
         // Initialize the database
-        airplaneTripService.save(airplaneTrip);
+        airplanetripService.save(airplanetrip);
 
-        int databaseSizeBeforeDelete = airplaneTripRepository.findAll().size();
+        int databaseSizeBeforeDelete = airplanetripRepository.findAll().size();
 
-        // Delete the airplaneTrip
-        restAirplaneTripMockMvc.perform(delete("/api/airplane-trips/{id}", airplaneTrip.getId())
+        // Delete the airplanetrip
+        restAirplanetripMockMvc.perform(delete("/api/airplanetrips/{id}", airplanetrip.getId())
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
         // Validate the database is empty
-        List<AirplaneTrip> airplaneTripList = airplaneTripRepository.findAll();
-        assertThat(airplaneTripList).hasSize(databaseSizeBeforeDelete - 1);
+        List<AirplaneTrip> airplanetripList = airplanetripRepository.findAll();
+        assertThat(airplanetripList).hasSize(databaseSizeBeforeDelete - 1);
     }
 
     @Test
     @Transactional
     public void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(AirplaneTrip.class);
-        AirplaneTrip airplaneTrip1 = new AirplaneTrip();
-        airplaneTrip1.setId(1L);
-        AirplaneTrip airplaneTrip2 = new AirplaneTrip();
-        airplaneTrip2.setId(airplaneTrip1.getId());
-        assertThat(airplaneTrip1).isEqualTo(airplaneTrip2);
-        airplaneTrip2.setId(2L);
-        assertThat(airplaneTrip1).isNotEqualTo(airplaneTrip2);
-        airplaneTrip1.setId(null);
-        assertThat(airplaneTrip1).isNotEqualTo(airplaneTrip2);
+        AirplaneTrip airplanetrip1 = new AirplaneTrip();
+        airplanetrip1.setId(1L);
+        AirplaneTrip airplanetrip2 = new AirplaneTrip();
+        airplanetrip2.setId(airplanetrip1.getId());
+        assertThat(airplanetrip1).isEqualTo(airplanetrip2);
+        airplanetrip2.setId(2L);
+        assertThat(airplanetrip1).isNotEqualTo(airplanetrip2);
+        airplanetrip1.setId(null);
+        assertThat(airplanetrip1).isNotEqualTo(airplanetrip2);
     }
 }
