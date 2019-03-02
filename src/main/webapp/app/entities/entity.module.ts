@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
@@ -9,8 +9,8 @@ import { RouterModule } from '@angular/router';
                 loadChildren: './airplane-trip-import/airplane-trip-import.module#TesteAirplaneTripImportModule'
             },
             {
-                path: 'airline',
-                loadChildren: './airline/airline.module#TesteAirlineModule'
+                path: 'airport',
+                loadChildren: './airport/airport.module#TesteAirportModule'
             },
             {
                 path: 'airline',

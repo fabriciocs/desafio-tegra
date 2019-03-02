@@ -1,14 +1,13 @@
 package br.com.tegra.service.dto;
 
 import br.com.tegra.config.Constants;
-
 import br.com.tegra.domain.Authority;
 import br.com.tegra.domain.User;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-
-import javax.validation.constraints.*;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,7 +1,6 @@
 package br.com.tegra.repository;
 
 import br.com.tegra.domain.Authority;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

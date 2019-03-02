@@ -1,7 +1,6 @@
 package br.com.tegra.web.rest;
 
 import br.com.tegra.web.rest.vm.LoggerVM;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;

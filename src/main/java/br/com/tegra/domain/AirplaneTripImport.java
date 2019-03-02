@@ -1,17 +1,14 @@
 package br.com.tegra.domain;
 
 
+import br.com.tegra.domain.enumeration.ImportStatus;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Objects;
-
-import br.com.tegra.domain.enumeration.ImportStatus;
 
 /**
  * A AirplaneTripImport.

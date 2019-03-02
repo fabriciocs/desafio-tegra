@@ -1,8 +1,8 @@
 package br.com.tegra.config;
 
-import br.com.tegra.security.*;
-import br.com.tegra.security.jwt.*;
-
+import br.com.tegra.security.AuthoritiesConstants;
+import br.com.tegra.security.jwt.JWTConfigurer;
+import br.com.tegra.security.jwt.TokenProvider;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

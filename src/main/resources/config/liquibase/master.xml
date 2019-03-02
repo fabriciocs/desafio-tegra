@@ -10,8 +10,8 @@
     <include file="config/liquibase/changelog/20190228154548_added_entity_Airplanetrip.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20190228154548_added_entity_constraints_Airplanetrip.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20190228155358_added_entity_AirplaneTripImport.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190302130917_changelog.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
-
 
 </databaseChangeLog>

@@ -1,4 +1,5 @@
 package br.com.tegra.web.rest;
+
 import br.com.tegra.domain.Airport;
 import br.com.tegra.service.AirportService;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
 

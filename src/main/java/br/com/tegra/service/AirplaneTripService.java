@@ -7,11 +7,9 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.querydsl.core.types.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +74,18 @@ public class AirplaneTripService {
     @Transactional(readOnly = true)
     public boolean exists(AirplaneTrip airplaneTrip) {
 
-        Optional<AirplaneTrip> obj = airplaneTripRepository.findByFlight(airplaneTrip.getFlight());
+        QAirplaneTrip a = QAirplaneTrip.airplaneTrip;
+        Predicate predicate = a.flight.eq(airplaneTrip.getFlight())
+            .and(a.departureDate.eq(airplaneTrip.getDepartureDate()))
+            .and(a.departureTime.eq(airplaneTrip.getDepartureTime()))
+            .and(a.departureAirport.airport.eq(airplaneTrip.getDepartureAirport().getAirport()))
+            .and(a.arrivalDate.eq(airplaneTrip.getArrivalDate()))
+            .and(a.arrivalTime.eq(airplaneTrip.getArrivalTime()))
+            .and(a.arrivalAirport.airport.eq(airplaneTrip.getArrivalAirport().getAirport()))
+            .and(a.airline.name.eq(airplaneTrip.getAirline().getName()))
+            .and(a.price.eq(airplaneTrip.getPrice()));
+
+        Optional<AirplaneTrip> obj = airplaneTripRepository.findOne(predicate);
         return obj.isPresent();
     }
 
@@ -115,6 +124,16 @@ public class AirplaneTripService {
     public Optional<AirplaneTrip> findOne(Long id) {
         log.debug("Request to get Airplanetrip : {}", id);
         return airplaneTripRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AirplaneTrip> findAllByAirportsAndDate(Optional<Boolean> direct, String departureAirport, String arrivalAirport, LocalDate flighDate, Pageable pageable){
+        if(direct.isPresent() && true == direct.get()) {
+            return airplaneTripRepository.findAllByAirportsAndDateDirect(departureAirport, arrivalAirport, flighDate, pageable);
+        }else{
+           return null;
+
+        }
     }
 
     /**

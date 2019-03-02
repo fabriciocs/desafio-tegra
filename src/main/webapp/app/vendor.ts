@@ -1,46 +1,45 @@
 /* after changing this file run 'npm run webpack:build' */
 /* tslint:disable */
 import '../content/scss/vendor.scss';
-
-// Imports all fontawesome core and solid icons
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
-    faUser,
-    faSort,
-    faSortUp,
-    faSortDown,
-    faSync,
-    faEye,
-    faBan,
-    faTimes,
     faArrowLeft,
-    faSave,
-    faPlus,
-    faPencilAlt,
+    faAsterisk,
+    faBan,
     faBars,
-    faThList,
-    faUserPlus,
-    faRoad,
-    faTachometerAlt,
-    faHeart,
-    faList,
     faBell,
     faBook,
-    faHdd,
-    faFlag,
-    faWrench,
+    faCalendarAlt,
     faClock,
     faCloud,
-    faSignOutAlt,
-    faSignInAlt,
-    faCalendarAlt,
+    faEye,
+    faFlag,
+    faHdd,
+    faHeart,
+    faHome,
+    faList,
+    faPencilAlt,
+    faPlus,
+    faRoad,
+    faSave,
     faSearch,
-    faTrashAlt,
-    faAsterisk,
+    faSignInAlt,
+    faSignOutAlt,
+    faSort,
+    faSortDown,
+    faSortUp,
+    faSync,
+    faTachometerAlt,
     faTasks,
-    faHome
+    faThList,
+    faTimes,
+    faTrashAlt,
+    faUser,
+    faUserPlus,
+    faWrench
 } from '@fortawesome/free-solid-svg-icons';
+
+// Imports all fontawesome core and solid icons
 
 // Adds the SVG icon to the library so you can use it in your page
 library.add(faUser);

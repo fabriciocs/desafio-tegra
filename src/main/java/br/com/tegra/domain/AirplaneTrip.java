@@ -6,8 +6,10 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -31,7 +33,7 @@ public class AirplaneTrip implements Serializable {
     @NotNull
     @Size(min = 6, max = 8)
     @Pattern(regexp = "^[A-Z0-9]+$")
-    @Column(name = "flight", length = 8, nullable = false, unique = true)
+    @Column(name = "flight", length = 8, nullable = false)
     private String flight;
 
     @Column(name = "departure_date")

@@ -2,7 +2,6 @@ package br.com.tegra.web.rest;
 
 import br.com.tegra.service.AuditEventService;
 import br.com.tegra.web.rest.util.PaginationUtil;
-
 import io.github.jhipster.web.util.ResponseUtil;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.data.domain.Page;
