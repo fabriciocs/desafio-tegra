@@ -348,18 +348,6 @@
 
 
         <!-- jhipster-needle-maven-add-dependency -->
-        <dependency>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-sql</artifactId>
-            <version>${querydsl.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-sql-codegen</artifactId>
-            <version>${querydsl.version}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>com.querydsl</groupId>
@@ -375,11 +363,6 @@
             <groupId>com.mysema.querydsl</groupId>
             <artifactId>querydsl-core</artifactId>
             <version>3.4.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-root</artifactId>
-            <version>${querydsl.version}</version>
         </dependency>
     </dependencies>
 

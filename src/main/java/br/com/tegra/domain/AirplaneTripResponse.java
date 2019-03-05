@@ -57,17 +57,20 @@ public class AirplaneTripResponse implements Serializable {
             setDepartureTime(first.getDepartureTime());
         }
         if(last != null) {
-            setArrivalAirport(last.getArrivalAirport().getAirport());
+            //setArrivalAirport(last.getArrivalAirport().getAirport());
             setArrivalDate(last.getArrivalDate());
             setArrivalTime(last.getArrivalTime());
         }else{
-            setArrivalAirport(first.getArrivalAirport().getAirport());
+            //setArrivalAirport(first.getArrivalAirport().getAirport());
             setArrivalDate(first.getArrivalDate());
             setArrivalTime(first.getArrivalTime());
         }
 
         Arrays.asList(trips).forEach(t -> {
             if (t != null) {
+                setArrivalDate(t.getArrivalDate());
+                setArrivalTime(t.getArrivalTime());
+                setArrivalAirport(t.getArrivalAirport().getAirport());
                 this.trips.add(new AirplaneTripResponse()
                     .flight(t.getFlight())
                     .airline(t.getAirline().getName())

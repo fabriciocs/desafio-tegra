@@ -6,15 +6,10 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.DateExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.OpenJPATemplates;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.querydsl.sql.DatePart;
-
-import com.querydsl.sql.MySQLTemplates;
-import com.querydsl.sql.SQLExpressions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -80,9 +76,15 @@ public class CustomAirplaneTripRepositoryImpl extends QuerydslRepositorySupport 
         QAirplaneTrip trip = null;
         QAirplaneTrip lastTrip = null;
         BooleanExpression trueCondition = null;
+        JPAQuery<Tuple> queryT = null;
+        List<QAirplaneTrip> airplaneTripList = new ArrayList<>();
+        airplaneTripList.add(baseTrip);
+
         for (int i = 0; i < flightRange; i++) {
             lastTrip = new QAirplaneTrip("trip" + i);
             trip = new QAirplaneTrip("trip" + (i + 1));
+            //airplaneTripList.add(lastTrip);
+            airplaneTripList.add(trip);
             if (null == trueCondition) {
                 trueCondition = lastTrip.arrivalAirport
                     .id.eq(arrival.getId())
@@ -95,39 +97,29 @@ public class CustomAirplaneTripRepositoryImpl extends QuerydslRepositorySupport 
 
             q = q.leftJoin(trip)
                 .on(lastTrip.arrivalAirport.id.eq(trip.departureAirport.id)
-                    .and(trip.departureTime.hour().subtract(lastTrip.arrivalTime.hour()).between(1,12))
+                    .and(Expressions.numberTemplate(Long.class,
+                        "TIMESTAMPDIFF(HOUR, {0}, {1})",
+                        lastTrip.arrivalTime,
+                        trip.departureTime).between(1, 12))
                     .and(trip.arrivalAirport.id.eq(arrival.getId()))
                     .and(lastTrip.airline.eq(trip.airline)));
         }
 
-        JPAQuery<Tuple> queryT = null;
-        for (int i = 0; i < flightRange; i++) {
-            lastTrip = new QAirplaneTrip("trip" + i);
-            trip = new QAirplaneTrip("trip" + (i + 1));
-            if (queryT == null) {
-                queryT = q.where(baseTrip.departureAirport.id.eq(departure.getId())
-                    .and(baseTrip.departureDate.eq(flighDate))
-                    .and(trueCondition))
-                    .orderBy(getOrderSpecifiers(pageable))
-                    .limit(pageable.getPageSize())
-                    .offset(pageable.getOffset())
-                    .distinct()
-                    .select(baseTrip,
-                        lastTrip,
-                        trip);
-            } else {
-                queryT = queryT.select(baseTrip,
-                    lastTrip,
-                    trip);
-            }
-        }
+        QAirplaneTrip[] paramArray = airplaneTripList.toArray(new QAirplaneTrip[]{});
 
-        long total = q.fetchCount();
+        queryT = q.where(baseTrip.departureAirport.id.eq(departure.getId())
+            .and(baseTrip.departureDate.eq(flighDate))
+            .and(trueCondition))
+            .orderBy(getOrderSpecifiers(pageable))
+            .limit(pageable.getPageSize())
+            .offset(pageable.getOffset())
+            .distinct()
+            .select(paramArray);
+
+        long total = queryT.fetchCount();
 
 
-        List<AirplaneTripResponse> content = q.select(Projections.constructor(AirplaneTripResponse.class, baseTrip,
-            lastTrip,
-            trip)).fetch();
+        List<AirplaneTripResponse> content = queryT.select(Projections.constructor(AirplaneTripResponse.class, paramArray)).fetch();
         content.forEach(System.out::println);
         return new PageImpl<>(content, pageable, total);
     }
