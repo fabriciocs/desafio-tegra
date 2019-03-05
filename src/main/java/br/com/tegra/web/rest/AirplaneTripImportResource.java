@@ -51,7 +51,7 @@ public class AirplaneTripImportResource {
     private File getFile(MultipartFile file) throws IOException {
         String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
         String fileName = date + file.getOriginalFilename();
-        File diskFile = new File(request.getServletContext().getRealPath("/upload"));
+        File diskFile = new File(request.getServletContext().getRealPath("/"),"upload");
         if(!diskFile.exists()) diskFile.mkdirs();
         diskFile = new File(diskFile, fileName);
         file.transferTo(diskFile);
