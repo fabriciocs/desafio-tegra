@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface AirplaneTripRepository extends JpaRepository<AirplaneTrip, Long>, QuerydslPredicateExecutor<AirplaneTrip> {
+public interface AirplaneTripRepository extends JpaRepository<AirplaneTrip, Long>, QuerydslPredicateExecutor<AirplaneTrip>, CustomAirplaneTripRepository {
 
     Optional<AirplaneTrip> findByFlight(String flight);
     Optional<AirplaneTrip> findByFlightAndAirlineName(String flight, String airlineName);

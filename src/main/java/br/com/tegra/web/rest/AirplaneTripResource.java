@@ -1,6 +1,7 @@
 package br.com.tegra.web.rest;
 
 import br.com.tegra.domain.AirplaneTrip;
+import br.com.tegra.domain.AirplaneTripResponse;
 import br.com.tegra.service.AirplaneTripService;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
 import br.com.tegra.web.rest.util.HeaderUtil;
@@ -99,15 +100,15 @@ public class AirplaneTripResource {
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of airplanetrips in body
      */
-    @GetMapping("/airplanetrips/{direct}/{departureAirport}/{arrivalAirport}/{tripDate}")
-    public ResponseEntity<List<AirplaneTrip>> getAllAirplanetrips(Pageable pageable,
-                                                                  @PathVariable() Optional<Boolean> direct,
-                                                                  @PathVariable() String departureAirport,
-                                                                  @PathVariable() String arrivalAirport,
-                                                                  @PathVariable() @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate tripDate) {
+    @GetMapping("/airplanetrips/{flightRange}/{departureAirport}/{arrivalAirport}/{tripDate}")
+    public ResponseEntity<List<AirplaneTripResponse>> getAllAirplanetrips(Pageable pageable,
+                                                                          @PathVariable() Integer flightRange,
+                                                                          @PathVariable() String departureAirport,
+                                                                          @PathVariable() String arrivalAirport,
+                                                                          @PathVariable() @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate tripDate) {
         log.debug("REST request to get a page of Airplanetrips {}, {}, {}", departureAirport, arrivalAirport, tripDate);
-        Page<AirplaneTrip> page = airplanetripService.findAllByAirportsAndDate(direct, departureAirport, arrivalAirport, tripDate, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/airplanetrips/%s/%s/%s", departureAirport, arrivalAirport, tripDate));
+        Page<AirplaneTripResponse> page = airplanetripService.findAllByAirportsAndDate(departureAirport, arrivalAirport, tripDate, flightRange.intValue(), pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/airplanetrips/%s/%s/%s/%s", flightRange, departureAirport, arrivalAirport, tripDate));
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 

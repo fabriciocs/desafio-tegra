@@ -127,13 +127,13 @@ public class AirplaneTripService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AirplaneTrip> findAllByAirportsAndDate(Optional<Boolean> direct, String departureAirport, String arrivalAirport, LocalDate flighDate, Pageable pageable){
-        if(direct.isPresent() && true == direct.get()) {
-            return airplaneTripRepository.findAllByAirportsAndDateDirect(departureAirport, arrivalAirport, flighDate, pageable);
-        }else{
-           return null;
-
-        }
+    public Page<AirplaneTripResponse> findAllByAirportsAndDate(String departureAirport, String arrivalAirport, LocalDate flighDate,int flighRage, Pageable pageable) {
+        return airplaneTripRepository
+            .findAllByAirportsAndDate(
+                departureAirport,
+                arrivalAirport,
+                flighDate,
+                flighRage, pageable);
     }
 
     /**
@@ -205,10 +205,10 @@ public class AirplaneTripService {
     private AirplaneTrip convertToAirplaneTrip(AirplaneTripCsv a, Airline airline) {
         String datePattern = "yyyy-MM-dd";
         LocalDate arrivalDate = LocalDate.parse(a.getDepartureDate(), DateTimeFormatter.ofPattern(datePattern));
-        Instant arrivalTime = Instant.parse(a.getDepartureDate() + "T" +a.getArrivalTime()+":00Z");
+        Instant arrivalTime = Instant.parse(a.getDepartureDate() + "T" + a.getArrivalTime() + ":00Z");
 
         LocalDate departureDate = LocalDate.parse(a.getDepartureDate(), DateTimeFormatter.ofPattern(datePattern));
-        Instant departureTime = Instant.parse(a.getDepartureDate() + "T" +a.getDepartureTime()+":00Z");
+        Instant departureTime = Instant.parse(a.getDepartureDate() + "T" + a.getDepartureTime() + ":00Z");
 
         return new AirplaneTrip()
             .arrivalDate(arrivalDate)
@@ -225,10 +225,10 @@ public class AirplaneTripService {
     private AirplaneTrip convertToAirplaneTrip(AirplaneTripJson a, Airline airline) {
         String datePattern = "yyyy-MM-dd";
         LocalDate arrivalDate = LocalDate.parse(a.getDataSaida(), DateTimeFormatter.ofPattern(datePattern));
-        Instant arrivalTime = Instant.parse(a.getDataSaida() + "T" +a.getChegada()+":00Z");
+        Instant arrivalTime = Instant.parse(a.getDataSaida() + "T" + a.getChegada() + ":00Z");
 
         LocalDate departureDate = LocalDate.parse(a.getDataSaida(), DateTimeFormatter.ofPattern(datePattern));
-        Instant departureTime = Instant.parse(a.getDataSaida() + "T" +a.getSaida()+":00Z");
+        Instant departureTime = Instant.parse(a.getDataSaida() + "T" + a.getSaida() + ":00Z");
 
         return new AirplaneTrip()
             .arrivalDate(arrivalDate)
