@@ -10,24 +10,18 @@ import io.github.jhipster.web.util.ResponseUtil;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sun.tools.java.ClassPath;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -57,7 +51,9 @@ public class AirplaneTripImportResource {
     private File getFile(MultipartFile file) throws IOException {
         String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
         String fileName = date + file.getOriginalFilename();
-        File diskFile = new File(request.getServletContext().getRealPath("/upload"), fileName);
+        File diskFile = new File(request.getServletContext().getRealPath("/upload"));
+        if(!diskFile.exists()) diskFile.mkdirs();
+        diskFile = new File(diskFile, fileName);
         file.transferTo(diskFile);
        return  diskFile;
 

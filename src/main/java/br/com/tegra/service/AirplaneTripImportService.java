@@ -7,13 +7,14 @@ import br.com.tegra.repository.AirplaneTripImportRepository;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service Implementation for managing AirplaneTripImport.

@@ -1,6 +1,7 @@
 package br.com.tegra.web.rest.vm;
 
 import br.com.tegra.service.dto.UserDTO;
+
 import javax.validation.constraints.Size;
 
 /**

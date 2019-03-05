@@ -1,10 +1,11 @@
 package br.com.tegra.service;
 
 import br.com.tegra.domain.Airline;
+import br.com.tegra.domain.QAirline;
+import br.com.tegra.domain.QAirplaneTrip;
 import br.com.tegra.repository.AirlineRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,8 +77,7 @@ public class AirlineService {
 
     @Transactional(readOnly = true)
     public Optional<Airline> findByName(String name) {
-        Airline airline = new Airline();
-        airline.setName(name);
-        return airlineRepository.findOne(Example.of(airline));
+
+        return airlineRepository.findOne(QAirline.airline.name.eq(name));
     }
 }

@@ -9,8 +9,9 @@ import br.com.tegra.security.AuthoritiesConstants;
 import br.com.tegra.security.SecurityUtils;
 import br.com.tegra.service.dto.UserDTO;
 import br.com.tegra.service.util.RandomUtil;
-import br.com.tegra.web.rest.errors.*;
-
+import br.com.tegra.web.rest.errors.EmailAlreadyUsedException;
+import br.com.tegra.web.rest.errors.InvalidPasswordException;
+import br.com.tegra.web.rest.errors.LoginAlreadyUsedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;

@@ -6,8 +6,11 @@ Main page styles
     display: inline-block;
     width: 347px;
     height: 497px;
-    background: url('../../content/images/jhipster_family_member_3.svg') no-repeat center top;
+    background: url('../../content/images/logo-tegra.png') no-repeat center top;
     background-size: contain;
+}
+.top-row {
+    max-height: 250px;
 }
 
 /* wait autoprefixer update to allow simple generation of high pixel density media query */
@@ -17,7 +20,7 @@ Main page styles
     only screen and (min-resolution: 192dpi),
     only screen and (min-resolution: 2dppx) {
     .hipster {
-        background: url('../../content/images/jhipster_family_member_3.svg') no-repeat center top;
+        background: url('../../content/images/bg-tegra.jpg') no-repeat center top;
         background-size: contain;
     }
 }

@@ -4,13 +4,12 @@ import br.com.tegra.domain.*;
 import br.com.tegra.repository.AirplaneTripRepository;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.querydsl.core.types.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +42,7 @@ public class AirplaneTripService {
 
     private enum MimeTypes {
         CSV("text/csv"),
-        JSON("text/json");
+        JSON("application/json");
 
         private String mimeType;
 
@@ -75,7 +74,18 @@ public class AirplaneTripService {
     @Transactional(readOnly = true)
     public boolean exists(AirplaneTrip airplaneTrip) {
 
-        Optional<AirplaneTrip> obj = airplaneTripRepository.findByFlight(airplaneTrip.getFlight());
+        QAirplaneTrip a = QAirplaneTrip.airplaneTrip;
+        Predicate predicate = a.flight.eq(airplaneTrip.getFlight())
+            .and(a.departureDate.eq(airplaneTrip.getDepartureDate()))
+            .and(a.departureTime.eq(airplaneTrip.getDepartureTime()))
+            .and(a.departureAirport.airport.eq(airplaneTrip.getDepartureAirport().getAirport()))
+            .and(a.arrivalDate.eq(airplaneTrip.getArrivalDate()))
+            .and(a.arrivalTime.eq(airplaneTrip.getArrivalTime()))
+            .and(a.arrivalAirport.airport.eq(airplaneTrip.getArrivalAirport().getAirport()))
+            .and(a.airline.name.eq(airplaneTrip.getAirline().getName()))
+            .and(a.price.eq(airplaneTrip.getPrice()));
+
+        Optional<AirplaneTrip> obj = airplaneTripRepository.findOne(predicate);
         return obj.isPresent();
     }
 
@@ -116,6 +126,16 @@ public class AirplaneTripService {
         return airplaneTripRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
+    public Page<AirplaneTripResponse> findAllByAirportsAndDate(String departureAirport, String arrivalAirport, LocalDate flighDate,int flighRage, Pageable pageable) {
+        return airplaneTripRepository
+            .findAllByAirportsAndDate(
+                departureAirport,
+                arrivalAirport,
+                flighDate,
+                flighRage, pageable);
+    }
+
     /**
      * Delete the airplanetrip by id.
      *
@@ -144,32 +164,14 @@ public class AirplaneTripService {
         }
     }
 
-    public Set<AirplaneTrip> loadFromJson(String fileName, Airline airline) {
-        log.debug("Request to save AirplaneTrip from CSV File : {}", fileName);
-//        try {
-//            JsonSerializableSchema bootstrapSchema = JsonSerializableSchema.build()
-//                .addColumn(new CsvSchema.Column(0, "flight"))
-//                .addColumn(new CsvSchema.Column(1, "departureAirport"))
-//                .addColumn(new CsvSchema.Column(2, "arrivalAirport"))
-//                .addColumn(new CsvSchema.Column(3, "departureDate"))
-//                .addColumn(new CsvSchema.Column(3, "arrivalDate"))
-//                .addColumn(new CsvSchema.Column(4, "departureTime"))
-//                .addColumn(new CsvSchema.Column(5, "arrivalTime"))
-//                .addColumn(new CsvSchema.Column(6, "price"))
-//                .build().withHeader();
-//            CsvMapper mapper = new CsvMapper();
-//            File file = new ClassPathResource(fileName).getFile();
-//            MappingIterator<AirplaneTrip> readValues =
-//                mapper.reader(bootstrapSchema).readValues(file);
-//            return readValues.readAll().stream().map(a -> {
-//                a.setAirline(airline);
-//                return a;
-//            }).collect(Collectors.toList());
-//        } catch (Exception e) {
-//            log.error("Error occurred while loading object list from file " + fileName, e);
-//            return Collections.emptyList();
-//        }
-        return new HashSet<>();
+    public Set<AirplaneTrip> loadFromJson(String fileName, Airline airline) throws IOException {
+        log.debug("Request to save AirplaneTrip from JSON File : {}", fileName);
+        File file = getFile(fileName);
+
+        ObjectMapper mapper = new ObjectMapper();
+        MappingIterator<AirplaneTripJson> mappingIterator = mapper.readerFor(AirplaneTripJson.class).readValues(file);
+        return mappingIterator.readAll().stream().map(a -> convertToAirplaneTrip(a, airline)).collect(Collectors.toSet());
+
     }
 
     private File getFile(String fileName) {
@@ -203,10 +205,10 @@ public class AirplaneTripService {
     private AirplaneTrip convertToAirplaneTrip(AirplaneTripCsv a, Airline airline) {
         String datePattern = "yyyy-MM-dd";
         LocalDate arrivalDate = LocalDate.parse(a.getDepartureDate(), DateTimeFormatter.ofPattern(datePattern));
-        Instant arrivalTime = Instant.parse(a.getDepartureDate() + "T" +a.getArrivalTime()+":00Z");
+        Instant arrivalTime = Instant.parse(a.getDepartureDate() + "T" + a.getArrivalTime() + ":00Z");
 
         LocalDate departureDate = LocalDate.parse(a.getDepartureDate(), DateTimeFormatter.ofPattern(datePattern));
-        Instant departureTime = Instant.parse(a.getDepartureDate() + "T" +a.getDepartureTime()+":00Z");
+        Instant departureTime = Instant.parse(a.getDepartureDate() + "T" + a.getDepartureTime() + ":00Z");
 
         return new AirplaneTrip()
             .arrivalDate(arrivalDate)
@@ -218,5 +220,25 @@ public class AirplaneTripService {
             .price(a.getPrice())
             .arrivalAirport(airportService.findByName(a.getArrivalAirport()))
             .departureAirport(airportService.findByName(a.getDepartureAirport()));
+    }
+
+    private AirplaneTrip convertToAirplaneTrip(AirplaneTripJson a, Airline airline) {
+        String datePattern = "yyyy-MM-dd";
+        LocalDate arrivalDate = LocalDate.parse(a.getDataSaida(), DateTimeFormatter.ofPattern(datePattern));
+        Instant arrivalTime = Instant.parse(a.getDataSaida() + "T" + a.getChegada() + ":00Z");
+
+        LocalDate departureDate = LocalDate.parse(a.getDataSaida(), DateTimeFormatter.ofPattern(datePattern));
+        Instant departureTime = Instant.parse(a.getDataSaida() + "T" + a.getSaida() + ":00Z");
+
+        return new AirplaneTrip()
+            .arrivalDate(arrivalDate)
+            .arrivalTime(arrivalTime)
+            .departureDate(departureDate)
+            .departureTime(departureTime)
+            .flight(a.getVoo())
+            .airline(airline)
+            .price(a.getValor())
+            .arrivalAirport(airportService.findByName(a.getDestino()))
+            .departureAirport(airportService.findByName(a.getOrigem()));
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "teste",
-    "version": "0.0.0",
-    "description": "Description for teste",
+    "version": "1.0.0",
+    "description": "Desafio Tegra",
     "private": true,
     "license": "UNLICENSED",
     "cacheDirectories": [
