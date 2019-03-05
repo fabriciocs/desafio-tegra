@@ -3,7 +3,7 @@
     <changeSet author="fabricio.santos (generated)" id="1551532166767-1">
         <dropUniqueConstraint constraintName="UX_AIRPLANE_TRIP_FLIGHT" tableName="AIRPLANE_TRIP"/>
     </changeSet>
-    <changeSet author="fabricio.santos (generated)" id="1551532166767-2">
-        <dropTable tableName="JHI_DATE_TIME_WRAPPER"/>
-    </changeSet>
+    <!--<changeSet author="fabricio.santos (generated)" id="1551532166767-2">-->
+        <!--<dropTable tableName="JHI_DATE_TIME_WRAPPER"/>-->
+    <!--</changeSet>-->
 </databaseChangeLog>
