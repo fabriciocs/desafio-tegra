@@ -10,6 +10,7 @@ import io.github.jhipster.web.util.ResponseUtil;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,15 +43,19 @@ public class AirplaneTripImportResource {
 
     private final AirplaneTripImportService airplaneTripImportService;
     private final HttpServletRequest request;
+    private final Clock clock;
+    private final Tika tika;
 
-    public AirplaneTripImportResource(AirplaneTripImportService airplaneTripImportService, HttpServletRequest request) {
+    public AirplaneTripImportResource(AirplaneTripImportService airplaneTripImportService, HttpServletRequest request, Clock clock, Tika tika) {
         this.airplaneTripImportService = airplaneTripImportService;
         this.request = request;
+        this.clock = clock;
+        this.tika = tika;
     }
 
 
     private File getFile(MultipartFile file) throws IOException {
-        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
+        String date = LocalDateTime.now(this.clock).format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
         String fileName = date + file.getOriginalFilename();
         File diskFile = new File(request.getServletContext().getRealPath("/"),"upload");
         if(!diskFile.exists()) diskFile.mkdirs();
@@ -59,36 +65,59 @@ public class AirplaneTripImportResource {
 
     }
 
+    private AirplaneTripImport save(MultipartFile file, String airline) throws IOException {
 
-    /**
-     * POST  /airplane-trip-imports : Create a new airplaneTripImport.
-     *
-     * @param file the file to create an airplaneTripImport
-     * @return the ResponseEntity with status 201 (Created) and with body the new airplaneTripImport, or with status 400 (Bad Request) if the airplaneTripImport has already an ID
-     * @throws URISyntaxException if the Location URI syntax is incorrect
-     */
-    @PostMapping("/airplane-trip-imports")
-    public ResponseEntity<AirplaneTripImport> createAirplaneTripImport(@RequestParam("file") MultipartFile file, @RequestParam("airline") String airline) throws URISyntaxException, IOException {
-        //ClassPathResource cpr =
         File diskFile = this.getFile(file);
-        //file.transferTo(diskFile);
 
-        AirplaneTripImport airplaneTripImport = new AirplaneTripImport();
-        airplaneTripImport.setFile(diskFile.getName());
-        airplaneTripImport.setDateTime(Instant.now());
-        airplaneTripImport.setMimeType(new Tika().detect(diskFile));
-        airplaneTripImport.setStatus(ImportStatus.WAITING);
-        airplaneTripImport.setAirline(airline);
+
+        AirplaneTripImport airplaneTripImport = new AirplaneTripImport()
+            .file(diskFile.getName())
+            .dateTime(Instant.now(clock))
+            .mimeType(tika.detect(diskFile))
+            .status(ImportStatus.WAITING)
+            .airline(airline);
 
         log.debug("REST request to save AirplaneTripImport : {}", airplaneTripImport);
         if (airplaneTripImport.getId() != null) {
             throw new BadRequestAlertException("A new airplaneTripImport cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        AirplaneTripImport result = airplaneTripImportService.save(airplaneTripImport);
+        return airplaneTripImportService.save(airplaneTripImport);
+    }
+
+
+    /**
+     * POST  /airplane-trip-imports : Schedule a import.
+     *
+     * @param file the file to create an airplaneTripImport
+     * @return the ResponseEntity with status 201 (Created) and with body the new airplaneTripImport, or with status 400 (Bad Request) if the airplaneTripImport has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PostMapping("/airplane-trip-imports/schedule")
+    public ResponseEntity<AirplaneTripImport> createAirplaneTripImportSchedule(@RequestParam("file") MultipartFile file, @RequestParam("airline") String airline) throws URISyntaxException, IOException {
+
+        AirplaneTripImport result = this.save(file, airline);
         return ResponseEntity.created(new URI("/api/airplane-trip-imports/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+    /**
+     * POST  /airplane-trip-imports : Create a new airplaneTripImport.
+     *
+         * @param file the file to create an airplaneTripImport
+     * @return the ResponseEntity with status 201 (Created) and with body the new airplaneTripImport, or with status 400 (Bad Request) if the airplaneTripImport has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PostMapping("/airplane-trip-imports")
+    public ResponseEntity<AirplaneTripImport> createAirplaneTripImport(@RequestParam("file") MultipartFile file, @RequestParam("airline") String airline) throws URISyntaxException, IOException {
+
+        AirplaneTripImport result = this.save(file, airline);
+        Optional<AirplaneTripImport> optional = airplaneTripImportService.importTrips(result);
+        return ResponseEntity.created(new URI("/api/airplane-trip-imports/" + optional.get().getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
+
 
     /**
      * PUT  /airplane-trip-imports : Updates an existing airplaneTripImport.
