@@ -7,11 +7,15 @@ import br.com.tegra.domain.AirplaneTripImport;
 import br.com.tegra.repository.AirplaneTripImportRepository;
 import br.com.tegra.service.AirlineService;
 import br.com.tegra.service.AirplaneTripImportService;
+import br.com.tegra.service.AirportService;
 import br.com.tegra.web.rest.errors.ExceptionTranslator;
 
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +33,8 @@ import org.springframework.validation.Validator;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -38,6 +44,8 @@ import static br.com.tegra.web.rest.TestUtil.sameInstant;
 import static br.com.tegra.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -57,10 +65,10 @@ public class AirplaneTripImportResourceIntTest {
     private static final String DEFAULT_AIRLINE = "AAAAAAAAAA";
     private static final String UPDATED_AIRLINE = "BBBBBBBBBB";
 
-    private static final Instant DEFAULT_DATE_TIME = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC).toInstant();
+    private static final Instant DEFAULT_DATE_TIME = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0).toInstant();
     private static final Instant UPDATED_DATE_TIME = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0).toInstant();
 
-    private static final String DEFAULT_MIME_TYPE = "AAAAAAAAAA";
+    private static final String DEFAULT_MIME_TYPE = "text/csv";
     private static final String UPDATED_MIME_TYPE = "BBBBBBBBBB";
 
     private static final ImportStatus DEFAULT_STATUS = ImportStatus.SUCCESS;
@@ -79,6 +87,8 @@ public class AirplaneTripImportResourceIntTest {
 
     @Autowired
     private AirlineService airlineService;
+    @Autowired
+    private AirportService airportService;
 
     @Autowired
     private AirplaneTripImportService airplaneTripImportService;
@@ -105,10 +115,30 @@ public class AirplaneTripImportResourceIntTest {
     @Autowired
     private HttpServletRequest request;
 
+    private final static LocalDate LOCAL_DATE =  ZonedDateTime.now(ZoneId.systemDefault()).withNano(0).toLocalDate();
+
+
+    @Mock
+    private Clock clock;
+
+
+
+    @Mock
+    private Tika tika;
+
+    final  MockMultipartFile multipartFile = new MockMultipartFile("data", "filename.csv", "text/csv", CONTENT_CSV.getBytes());
+
+    //private Clock fixedClock;
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        final AirplaneTripImportResource airplaneTripImportResource = new AirplaneTripImportResource(airplaneTripImportService, request);
+        //tell your tests to return the specified LOCAL_DATE when calling LocalDate.now(clock)
+        //fixedClock = Clock.fixed(DEFAULT_DATE_TIME, ZoneId.systemDefault());
+        doReturn(DEFAULT_DATE_TIME).when(clock).instant();
+        doReturn(ZoneId.systemDefault()).when(clock).getZone();
+        doReturn(DEFAULT_MIME_TYPE).when(tika).detect(any(File.class));
+
+        final AirplaneTripImportResource airplaneTripImportResource = new AirplaneTripImportResource(airplaneTripImportService, request, clock, tika);
         this.restAirplaneTripImportMockMvc = MockMvcBuilders.standaloneSetup(airplaneTripImportResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -143,23 +173,24 @@ public class AirplaneTripImportResourceIntTest {
     public void createAirplaneTripImport() throws Exception {
         int databaseSizeBeforeCreate = airplaneTripImportRepository.findAll().size();
 
+        airportService.loadAirportsFromUrl();
         airlineService.save(new Airline().name(DEFAULT_AIRLINE));
 
-        MockMultipartFile file = new MockMultipartFile("data", "filename.csv", "text/csv", CONTENT_CSV.getBytes());
+
         // Create the AirplaneTripImport
         restAirplaneTripImportMockMvc.perform(multipart("/api/airplane-trip-imports")
-            .file("file", file.getBytes())
+            .file("file", multipartFile.getBytes())
             .param("airline", DEFAULT_AIRLINE)
             .contentType(MediaType.MULTIPART_FORM_DATA))
             .andExpect(status().isCreated());
 
         // Validate the AirplaneTripImport in the database
         List<AirplaneTripImport> airplaneTripImportList = airplaneTripImportRepository.findAll();
-        String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
+        String dateTime = LocalDateTime.now(clock).format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
         assertThat(airplaneTripImportList).hasSize(databaseSizeBeforeCreate + 1);
         AirplaneTripImport testAirplaneTripImport = airplaneTripImportList.get(airplaneTripImportList.size() - 1);
         //Sincronizar a data de criação do arquivo com o tempo do teste
-        //assertThat(testAirplaneTripImport.getFile()).isEqualTo(dateTime);
+        assertThat(testAirplaneTripImport.getFile()).isEqualTo(dateTime);
         assertThat(testAirplaneTripImport.getAirline()).isEqualTo(DEFAULT_AIRLINE);
         assertThat(testAirplaneTripImport.getDateTime()).isEqualTo(DEFAULT_DATE_TIME);
         assertThat(testAirplaneTripImport.getMimeType()).isEqualTo(DEFAULT_MIME_TYPE);

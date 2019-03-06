@@ -1,5 +1,6 @@
 package br.com.tegra.service;
 
+import br.com.tegra.domain.Airline;
 import br.com.tegra.domain.AirplaneTrip;
 import br.com.tegra.domain.AirplaneTripImport;
 import br.com.tegra.domain.enumeration.ImportStatus;
@@ -45,10 +46,9 @@ public class AirplaneTripImportService {
      */
     public AirplaneTripImport save(AirplaneTripImport airplaneTripImport) {
         log.debug("Request to save AirplaneTripImport : {}", airplaneTripImport);
-        if (!airlineService.findByName(airplaneTripImport.getAirline()).isPresent()) {
-            String defaultMessage = String.format("Airlaine \"%s\" does not existis", airplaneTripImport.getAirline());
-            String entity = "Airline";
-            throw new BadRequestAlertException(defaultMessage, entity, "not found");
+        String airline = airplaneTripImport.getAirline();
+        if (!airlineService.findByName(airline).isPresent()) {
+            airlineService.save(new Airline().name(airline));
         }
         return airplaneTripImportRepository.save(airplaneTripImport);
     }
@@ -95,8 +95,7 @@ public class AirplaneTripImportService {
     }
 
     public AirplaneTripImport setStatus(AirplaneTripImport airplaneTripImport, ImportStatus status) {
-        airplaneTripImport.setStatus(ImportStatus.PROCESSING);
-        return save(airplaneTripImport);
+        return save(airplaneTripImport.status(status));
     }
 
 
