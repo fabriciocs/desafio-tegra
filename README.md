@@ -4,11 +4,7 @@ Olá Samuel, crei a estrutura do projeto utilizando jhipster, segue o link [http
 
 Para executar o projeto, basta entrar na pasta e digitar:
 
-    ./mvnw -Pdev,swagger clean package -DskipTests
-
-Depois, basta executar o war como a seguir
-
-    java -jar target/*.war
+    ./mvnw -Pprod,swagger spring-boot:run
 
 O projeto usa a porta 8080 do localhost [http://localhost:8080](http://localhost:8080).
 
@@ -22,8 +18,8 @@ username: root
 password: 3EDFVWG4
 
 Para executar o migrate basta executar:
-  
- ./mvnw liquibase:update
+
+./mvnw liquibase:update
 
 Caso deseje alterar os dados basta acessar o arquivo [src/main/resources/application-prod.yml](src/main/resources/application-prod.yml)
 para alterar os dados produção.
