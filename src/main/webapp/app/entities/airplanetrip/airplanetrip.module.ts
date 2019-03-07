@@ -9,9 +9,10 @@ import {
     AirplanetripDeletePopupComponent,
     AirplanetripDeleteDialogComponent,
     airplanetripRoute,
-    airplanetripPopupRoute
+    airplanetripPopupRoute,
+    AirplanetripSearchFormComponent,
+    AirplanetripSearchViewComponent
 } from './';
-
 const ENTITY_STATES = [...airplanetripRoute, ...airplanetripPopupRoute];
 
 @NgModule({
@@ -21,13 +22,17 @@ const ENTITY_STATES = [...airplanetripRoute, ...airplanetripPopupRoute];
         AirplanetripDetailComponent,
         AirplanetripUpdateComponent,
         AirplanetripDeleteDialogComponent,
-        AirplanetripDeletePopupComponent
+        AirplanetripDeletePopupComponent,
+        AirplanetripSearchFormComponent,
+        AirplanetripSearchViewComponent
     ],
     entryComponents: [
         AirplanetripComponent,
         AirplanetripUpdateComponent,
         AirplanetripDeleteDialogComponent,
-        AirplanetripDeletePopupComponent
+        AirplanetripDeletePopupComponent,
+        AirplanetripSearchFormComponent,
+        AirplanetripSearchViewComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

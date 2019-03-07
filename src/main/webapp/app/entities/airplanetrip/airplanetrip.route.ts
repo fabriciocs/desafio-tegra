@@ -12,6 +12,8 @@ import { AirplanetripDetailComponent } from './airplanetrip-detail.component';
 import { AirplanetripUpdateComponent } from './airplanetrip-update.component';
 import { AirplanetripDeletePopupComponent } from './airplanetrip-delete-dialog.component';
 import { IAirplanetrip } from 'app/shared/model/airplanetrip.model';
+import { AirplanetripSearchFormComponent } from 'app/entities/airplanetrip/airplanetrip-search-form.component';
+import { AirplanetripSearchViewComponent } from 'app/entities/airplanetrip/airplanetrip-search-view.component';
 
 @Injectable({ providedIn: 'root' })
 export class AirplanetripResolve implements Resolve<IAirplanetrip> {
@@ -40,6 +42,29 @@ export const airplanetripRoute: Routes = [
             authorities: ['ROLE_USER'],
             defaultSort: 'id,asc',
             pageTitle: 'Airplanetrips'
+        },
+        canActivate: [UserRouteAccessService]
+    },
+    {
+        path: 'search-form',
+        component: AirplanetripSearchFormComponent,
+        data: {
+            authorities: ['ROLE_USER'],
+            defaultSort: 'id,asc',
+            pageTitle: 'AirplaneTrips'
+        },
+        canActivate: [UserRouteAccessService]
+    },
+    {
+        path: 'search-view',
+        component: AirplanetripSearchViewComponent,
+        resolve: {
+            pagingParams: JhiResolvePagingParams
+        },
+        data: {
+            authorities: ['ROLE_USER'],
+            defaultSort: 'id,asc',
+            pageTitle: 'AirplaneTrips'
         },
         canActivate: [UserRouteAccessService]
     },

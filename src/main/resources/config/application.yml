@@ -69,9 +69,9 @@ spring:
         active: #spring.profiles.active#
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://localhost:3306/teste?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC
-        username: root
-        password: 3EDFVWG4
+        url: jdbc:h2:file:./target/h2db/db/teste
+        username: teste
+        password:
         hikari:
             poolName: Hikari
             auto-commit: false
@@ -81,6 +81,8 @@ spring:
                 prepStmtCacheSqlLimit: 2048
                 useServerPrepStmts: true
     jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        database: H2
         open-in-view: false
         properties:
             hibernate.jdbc.time_zone: UTC

@@ -1,10 +1,18 @@
 <div class="bg-white container-fluid col-md-12 pad">
     <h2 id="page-heading">
         <span>Airports</span>
-        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-airport" [routerLink]="['/airport/new']">
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-airport"
+                [routerLink]="['/airport/new']">
             <fa-icon [icon]="'plus'"></fa-icon>
-            <span >
-            Create new Airport
+            <span>
+            Novo Aeroporto
+            </span>
+        </button>
+        <button id="jh-import-entities" class="btn btn-success float-right jh-create-entity create-airport"
+                (click)="import()">
+            <fa-icon [icon]="'plus'"></fa-icon>
+            <span>
+            Importar Aerportos
             </span>
         </button>
     </h2>
@@ -14,11 +22,19 @@
         <table class="table table-striped">
             <thead>
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
-            <th jhiSortBy="id"><span>ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="name"><span>Name</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="airport"><span>Airport</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="city"><span>City</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th></th>
+                <th jhiSortBy="id"><span>ID</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="name"><span>Name</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="airport"><span>Airport</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="city"><span>City</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -57,10 +73,12 @@
     </div>
     <div *ngIf="airports && airports.length">
         <div class="row justify-content-center">
-            <jhi-item-count [page]="page" [total]="totalItems" [maxSize]="5" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+            <jhi-item-count [page]="page" [total]="totalItems" [maxSize]="5"
+                            [itemsPerPage]="itemsPerPage"></jhi-item-count>
         </div>
         <div class="row justify-content-center">
-            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5"
+                            [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
         </div>
     </div>
 </div>

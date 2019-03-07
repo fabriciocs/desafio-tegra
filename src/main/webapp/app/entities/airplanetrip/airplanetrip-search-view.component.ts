@@ -2,20 +2,19 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
 import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
 
 import { IAirplaneTrip } from 'app/shared/model/airplane-trip.model';
 import { AccountService } from 'app/core';
 
 import { ITEMS_PER_PAGE } from 'app/shared';
-import { AirplaneTripService } from './airplane-trip.service';
+import { AirplanetripService } from '../airplanetrip/airplanetrip.service';
 
 @Component({
-    selector: 'jhi-airplane-trip',
-    templateUrl: './airplane-trip.component.html'
+    selector: 'jhi-airplane-trip-search-view',
+    templateUrl: './airplanetrip-search-view.component.html'
 })
-export class AirplaneTripComponent implements OnInit, OnDestroy {
+export class AirplanetripSearchViewComponent implements OnInit, OnDestroy {
     currentAccount: any;
     airplaneTrips: IAirplaneTrip[];
     error: any;
@@ -31,7 +30,7 @@ export class AirplaneTripComponent implements OnInit, OnDestroy {
     reverse: any;
 
     constructor(
-        protected airplaneTripService: AirplaneTripService,
+        protected airplaneTripService: AirplanetripService,
         protected parseLinks: JhiParseLinks,
         protected jhiAlertService: JhiAlertService,
         protected accountService: AccountService,

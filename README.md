@@ -9,6 +9,7 @@ Para executar o projeto, basta entrar na pasta e digitar:
 O projeto usa a porta 8080 do localhost [http://localhost:8080](http://localhost:8080).
 
 ##Banco de Dados
+
 O banco de dados utilizado é o MySql.
 O Host é localhost
 A porta é 3306

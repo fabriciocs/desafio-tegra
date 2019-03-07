@@ -60,7 +60,7 @@ describe('Service Tests', () => {
                     returnedFromService
                 );
                 service
-                    .create(new AirplaneTripImport(null))
+                    .create(new AirplaneTripImport(null), new File([], 'test-file.jpg', { lastModified: Date.now(), type: 'image/jpeg' }))
                     .pipe(take(1))
                     .subscribe(resp => expect(resp).toMatchObject({ body: expected }));
                 const req = httpMock.expectOne({ method: 'POST' });

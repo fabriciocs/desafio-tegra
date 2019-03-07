@@ -61,6 +61,16 @@ export class AirportComponent implements OnInit, OnDestroy {
             );
     }
 
+    import() {
+        this.airportService.import().subscribe(
+            (res: HttpResponse<any>) => {
+                this.onSuccess('Todos os Aeroportos foram importados');
+                this.loadAll();
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
+    }
+
     loadPage(page: number) {
         if (page !== this.previousPage) {
             this.previousPage = page;
@@ -123,6 +133,10 @@ export class AirportComponent implements OnInit, OnDestroy {
         this.links = this.parseLinks.parse(headers.get('link'));
         this.totalItems = parseInt(headers.get('X-Total-Count'), 10);
         this.airports = data;
+    }
+
+    protected onSuccess(successMessage: string) {
+        this.jhiAlertService.success(successMessage, null, null);
     }
 
     protected onError(errorMessage: string) {
