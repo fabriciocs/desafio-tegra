@@ -1,10 +1,11 @@
 <div class="bg-white container-fluid col-md-12 pad">
     <h2 id="page-heading">
         <span>Airplane Trip Imports</span>
-        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-airplane-trip-import" [routerLink]="['/airplane-trip-import/new']">
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-airplane-trip-import"
+                [routerLink]="['/airplane-trip-import/new']">
             <fa-icon [icon]="'plus'"></fa-icon>
-            <span >
-            Create new Airplane Trip Import
+            <span>
+            Importar Viagens
             </span>
         </button>
     </h2>
@@ -14,18 +15,32 @@
         <table class="table table-striped">
             <thead>
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
-            <th jhiSortBy="id"><span>ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="file"><span>File</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="airline"><span>Airline</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="dateTime"><span>Date Time</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="mimeType"><span>Mime Type</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="status"><span>Status</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th></th>
+                <th jhiSortBy="id"><span>ID</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="file"><span>File</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="airline"><span>Airline</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="dateTime"><span>Date Time</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="mimeType"><span>Mime Type</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="status"><span>Status</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let airplaneTripImport of airplaneTripImports ;trackBy: trackId">
-                <td><a [routerLink]="['/airplane-trip-import', airplaneTripImport.id, 'view' ]">{{airplaneTripImport.id}}</a></td>
+                <td><a
+                    [routerLink]="['/airplane-trip-import', airplaneTripImport.id, 'view' ]">{{airplaneTripImport.id}}</a>
+                </td>
                 <td>{{airplaneTripImport.file}}</td>
                 <td>{{airplaneTripImport.airline}}</td>
                 <td>{{airplaneTripImport.dateTime | date:'medium'}}</td>
@@ -37,13 +52,13 @@
                                 [routerLink]="['/airplane-trip-import', airplaneTripImport.id, 'view' ]"
                                 class="btn btn-info btn-sm">
                             <fa-icon [icon]="'eye'"></fa-icon>
-                            <span class="d-none d-md-inline">View</span>
+                            <span class="d-none d-md-inline">Ver</span>
                         </button>
-                        <button type="submit"
-                                [routerLink]="['/airplane-trip-import', airplaneTripImport.id, 'edit']"
-                                class="btn btn-primary btn-sm">
-                            <fa-icon [icon]="'pencil-alt'"></fa-icon>
-                            <span class="d-none d-md-inline">Edit</span>
+                        <button type="submit" *ngIf="isWaiting(airplaneTripImport)"
+                                (click)="import(airplaneTripImport)"
+                                class="btn btn-success btn-sm">
+                            <fa-icon [icon]="'save'"></fa-icon>
+                            <span class="d-none d-md-inline">Importar</span>
                         </button>
                         <button type="submit"
                                 [routerLink]="['/', 'airplane-trip-import', { outlets: { popup: airplaneTripImport.id + '/delete'} }]"
@@ -51,8 +66,9 @@
                                 queryParamsHandling="merge"
                                 class="btn btn-danger btn-sm">
                             <fa-icon [icon]="'times'"></fa-icon>
-                            <span class="d-none d-md-inline">Delete</span>
+                            <span class="d-none d-md-inline">Remover</span>
                         </button>
+
                     </div>
                 </td>
             </tr>
@@ -61,10 +77,12 @@
     </div>
     <div *ngIf="airplaneTripImports && airplaneTripImports.length">
         <div class="row justify-content-center">
-            <jhi-item-count [page]="page" [total]="totalItems" [maxSize]="5" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+            <jhi-item-count [page]="page" [total]="totalItems" [maxSize]="5"
+                            [itemsPerPage]="itemsPerPage"></jhi-item-count>
         </div>
         <div class="row justify-content-center">
-            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5"
+                            [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
         </div>
     </div>
 </div>

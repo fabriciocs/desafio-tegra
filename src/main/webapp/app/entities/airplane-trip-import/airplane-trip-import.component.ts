@@ -1,11 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
+import { JhiAlertService, JhiEventManager, JhiParseLinks } from 'ng-jhipster';
 
-import { IAirplaneTripImport } from 'app/shared/model/airplane-trip-import.model';
+import { IAirplaneTripImport, ImportStatus } from 'app/shared/model/airplane-trip-import.model';
 import { AccountService } from 'app/core';
 
 import { ITEMS_PER_PAGE } from 'app/shared';
@@ -117,6 +116,16 @@ export class AirplaneTripImportComponent implements OnInit, OnDestroy {
             result.push('id');
         }
         return result;
+    }
+
+    import(airplaneTripImport: IAirplaneTripImport) {
+        this.airplaneTripImportService
+            .import(airplaneTripImport.id)
+            .subscribe((res: HttpResponse<IAirplaneTripImport[]>) => this.clear(), (res: HttpErrorResponse) => this.onError(res.message));
+    }
+
+    isWaiting(airplaneTripImport: IAirplaneTripImport) {
+        return airplaneTripImport.status === ImportStatus.WAITING;
     }
 
     protected paginateAirplaneTripImports(data: IAirplaneTripImport[], headers: HttpHeaders) {

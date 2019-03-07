@@ -14,10 +14,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartResolver;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -53,15 +56,27 @@ public class AirplaneTripImportResource {
         this.tika = tika;
     }
 
+//    @Bean
+//    public MultipartConfigElement multipartConfigElement() {
+//        return new MultipartConfigElement("");
+//    }
+//
+//    @Bean
+//    public MultipartResolver multipartResolver() {
+//        org.springframework.web.multipart.commons.CommonsMultipartResolver multipartResolver = new org.springframework.web.multipart.commons.CommonsMultipartResolver();
+//        multipartResolver.setMaxUploadSize(1000000);
+//        return multipartResolver;
+//    }
+
 
     private File getFile(MultipartFile file) throws IOException {
         String date = LocalDateTime.now(this.clock).format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
         String fileName = date + file.getOriginalFilename();
-        File diskFile = new File(request.getServletContext().getRealPath("/"),"upload");
-        if(!diskFile.exists()) diskFile.mkdirs();
+        File diskFile = new File(request.getServletContext().getRealPath("/"), "upload");
+        if (!diskFile.exists()) diskFile.mkdirs();
         diskFile = new File(diskFile, fileName);
         file.transferTo(diskFile);
-       return  diskFile;
+        return diskFile;
 
     }
 
@@ -100,15 +115,16 @@ public class AirplaneTripImportResource {
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+
     /**
      * POST  /airplane-trip-imports : Create a new airplaneTripImport.
      *
-         * @param file the file to create an airplaneTripImport
+     * @param file the file to create an airplaneTripImport
      * @return the ResponseEntity with status 201 (Created) and with body the new airplaneTripImport, or with status 400 (Bad Request) if the airplaneTripImport has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping("/airplane-trip-imports")
-    public ResponseEntity<AirplaneTripImport> createAirplaneTripImport(@RequestParam("file") MultipartFile file, @RequestParam("airline") String airline) throws URISyntaxException, IOException {
+    @PostMapping(value = "/airplane-trip-imports/{airline}")
+    public ResponseEntity<AirplaneTripImport> createAirplaneTripImport(@RequestParam("file") MultipartFile file, @PathVariable("airline") String airline) throws URISyntaxException, IOException {
 
         AirplaneTripImport result = this.save(file, airline);
         Optional<AirplaneTripImport> optional = airplaneTripImportService.importTrips(result);
@@ -116,7 +132,6 @@ public class AirplaneTripImportResource {
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
-
 
 
     /**

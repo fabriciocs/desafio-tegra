@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import * as moment from 'moment';
-import { DATE_FORMAT } from 'app/shared/constants/input.constants';
 import { map } from 'rxjs/operators';
 
 import { SERVER_API_URL } from 'app/app.constants';
@@ -18,11 +17,15 @@ export class AirplaneTripImportService {
 
     constructor(protected http: HttpClient) {}
 
-    create(airplaneTripImport: IAirplaneTripImport): Observable<EntityResponseType> {
+    create(airplaneTripImport: IAirplaneTripImport, file: File): Observable<EntityResponseType> {
+        const formData = new FormData();
         const copy = this.convertDateFromClient(airplaneTripImport);
+        formData.append('file', file);
         return this.http
-            .post<IAirplaneTripImport>(this.resourceUrl, copy, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+            .post<IAirplaneTripImport>(`${this.resourceUrl}/${copy.airline}`, formData, {
+                observe: 'response'
+            })
+            .pipe(map((res: HttpResponse<IAirplaneTripImport>) => this.convertDateFromServer(res)));
     }
 
     update(airplaneTripImport: IAirplaneTripImport): Observable<EntityResponseType> {
@@ -47,6 +50,10 @@ export class AirplaneTripImportService {
 
     delete(id: number): Observable<HttpResponse<any>> {
         return this.http.delete<any>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    }
+
+    import(id: number): Observable<HttpResponse<any>> {
+        return this.http.post<any>(`${this.resourceUrl}/${id}/import`, null, { observe: 'response' });
     }
 
     protected convertDateFromClient(airplaneTripImport: IAirplaneTripImport): IAirplaneTripImport {
