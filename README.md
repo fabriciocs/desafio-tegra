@@ -10,17 +10,9 @@ O projeto usa a porta 8080 do localhost [http://localhost:8080](http://localhost
 
 ##Banco de Dados
 
-O banco de dados utilizado é o MySql.
-O Host é localhost
-A porta é 3306
-o banco é teste
+O banco de dados utilizado foi o H2 por sua extrema simplicidade.
 
-username: root
-password: 3EDFVWG4
-
-Para executar o migrate basta executar:
-
-./mvnw liquibase:update
+Não sendo necessário nenhuma ação extra para a aplicação funcionar.
 
 Caso deseje alterar os dados basta acessar o arquivo [src/main/resources/application-prod.yml](src/main/resources/application-prod.yml)
 para alterar os dados produção.
@@ -37,7 +29,24 @@ e user cuja senha é user
 
 O Swagger está configurado e roda no menu
 
-configuração -> documentação da api
+configuração -> documentação da api conforme imagens abaixo
+
+#home
+
+![home](src/main/resources/docs/images/home.png)
+
+#login
+![Login](src/main/resources/docs/images/login.png)
+
+#
+
+![Login2](src/main/resources/docs/images/login2.png)
+#API
+![API](src/main/resources/docs/images/api.png)
+
+#
+
+![API2](src/main/resources/docs/images/api2.png)
 
 ## O Uso do docker
 
