@@ -167,7 +167,7 @@ public class AirplaneTripService {
         }
     }
 
-    private  ObjectReader loadJsonReader() {
+    private ObjectReader loadJsonReader() {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readerFor(AirplaneTripJson.class);
     }
@@ -192,10 +192,28 @@ public class AirplaneTripService {
     }
 
     public void importAllFromGithub() throws IOException {
-        String airplanes99 = "https://raw.githubusercontent.com/tegraoss/desafio-tegra/master/99planes.json";
-        String uberAir = "https://raw.githubusercontent.com/tegraoss/desafio-tegra/master/uberair.csv";
-        loadFromJson(new URL(airplanes99),airlineService.findByName("99Airplanes").get());
-        loadFromCsv(new URL(uberAir),airlineService.findByName("UberAir").get());
+        String airplanes99Url = "https://raw.githubusercontent.com/tegraoss/desafio-tegra/master/99planes.json";
+        String uberAirUrl = "https://raw.githubusercontent.com/tegraoss/desafio-tegra/master/uberair.csv";
+        String airplanes99 = "99Airplanes";
+        String uberAir = "UberAir";
+        Optional<Airline> airline99 = airlineService.findByName(airplanes99);
+        if (!airline99.isPresent()) {
+            airline99 = Optional.of(airlineService.save(new Airline().name(airplanes99)));
+        }
+
+        Optional<Airline> airlineUberAir = airlineService.findByName(uberAir);
+        if (!airlineUberAir.isPresent()) {
+            airlineUberAir = Optional.of(airlineService.save(new Airline().name(uberAir)));
+        }
+
+        airportService.loadAirportsFromUrl();
+        Set<AirplaneTrip> airplaneTrips = loadFromJson(new URL(airplanes99Url), airline99.get());
+        airplaneTrips.addAll(loadFromCsv(new URL(uberAirUrl), airlineUberAir.get()));
+        for (AirplaneTrip airplaneTrip : airplaneTrips) {
+            if (!exists(airplaneTrip)) {
+                save(airplaneTrip);
+            }
+        }
     }
 
     public Set<AirplaneTrip> loadFromCsv(String fileName, Airline airline) throws IOException {
@@ -259,8 +277,8 @@ public class AirplaneTripService {
             .flight(a.getFlight())
             .airline(airline)
             .price(a.getPrice())
-            .arrivalAirport(airportService.findByName(a.getArrivalAirport()))
-            .departureAirport(airportService.findByName(a.getDepartureAirport()));
+            .arrivalAirport(airportService.findByAirport(a.getArrivalAirport()).get())
+            .departureAirport(airportService.findByAirport(a.getDepartureAirport()).get());
     }
 
     private AirplaneTrip convertToAirplaneTrip(AirplaneTripJson a, Airline airline) {
@@ -279,7 +297,7 @@ public class AirplaneTripService {
             .flight(a.getVoo())
             .airline(airline)
             .price(a.getValor())
-            .arrivalAirport(airportService.findByName(a.getDestino()))
-            .departureAirport(airportService.findByName(a.getOrigem()));
+            .arrivalAirport(airportService.findByAirport(a.getDestino()).get())
+            .departureAirport(airportService.findByAirport(a.getOrigem()).get());
     }
 }

@@ -66,7 +66,7 @@ public class AirplaneTripResource {
      *
      */
     @PostMapping("/airplanetrips/import")
-    public ResponseEntity<Void> createAirplanetrip() throws IOException {
+    public ResponseEntity<Void> importAirplanetrip() throws IOException {
         log.debug("REST request to import all airline trips");
         airplanetripService.importAllFromGithub();
         return ResponseEntity.ok(null);
