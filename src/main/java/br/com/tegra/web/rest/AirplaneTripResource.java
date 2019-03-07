@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -57,6 +58,18 @@ public class AirplaneTripResource {
         return ResponseEntity.created(new URI("/api/airplanetrips/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
+    }
+
+
+    /**
+     * POST  /airplanetrips/import : Import All AirplaneTrips.
+     *
+     */
+    @PostMapping("/airplanetrips/import")
+    public ResponseEntity<Void> createAirplanetrip() throws IOException {
+        log.debug("REST request to import all airline trips");
+        airplanetripService.importAllFromGithub();
+        return ResponseEntity.ok(null);
     }
 
     /**

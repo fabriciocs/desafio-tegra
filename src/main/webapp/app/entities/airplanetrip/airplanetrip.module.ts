@@ -9,9 +9,7 @@ import {
     AirplanetripDeletePopupComponent,
     AirplanetripDeleteDialogComponent,
     airplanetripRoute,
-    airplanetripPopupRoute,
-    AirplanetripSearchFormComponent,
-    AirplanetripSearchViewComponent
+    airplanetripPopupRoute
 } from './';
 const ENTITY_STATES = [...airplanetripRoute, ...airplanetripPopupRoute];
 
@@ -22,17 +20,13 @@ const ENTITY_STATES = [...airplanetripRoute, ...airplanetripPopupRoute];
         AirplanetripDetailComponent,
         AirplanetripUpdateComponent,
         AirplanetripDeleteDialogComponent,
-        AirplanetripDeletePopupComponent,
-        AirplanetripSearchFormComponent,
-        AirplanetripSearchViewComponent
+        AirplanetripDeletePopupComponent
     ],
     entryComponents: [
         AirplanetripComponent,
         AirplanetripUpdateComponent,
         AirplanetripDeleteDialogComponent,
-        AirplanetripDeletePopupComponent,
-        AirplanetripSearchFormComponent,
-        AirplanetripSearchViewComponent
+        AirplanetripDeletePopupComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

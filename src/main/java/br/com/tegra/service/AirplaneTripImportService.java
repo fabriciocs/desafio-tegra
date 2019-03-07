@@ -1,11 +1,11 @@
 package br.com.tegra.service;
 
-import br.com.tegra.domain.Airline;
-import br.com.tegra.domain.AirplaneTrip;
-import br.com.tegra.domain.AirplaneTripImport;
+import br.com.tegra.domain.*;
 import br.com.tegra.domain.enumeration.ImportStatus;
 import br.com.tegra.repository.AirplaneTripImportRepository;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -107,13 +109,13 @@ public class AirplaneTripImportService {
             for (AirplaneTrip airplaneTrip : airplaneTrips) {
                 if (airplaneTripService.exists(airplaneTrip)) {
                     hasWarning = true;
-                }else {
+                } else {
                     airplaneTripService.save(airplaneTrip);
                 }
             }
-            if(hasWarning){
-                airplaneTripImport =  setStatus(airplaneTripImport, ImportStatus.WARNING);
-            }else{
+            if (hasWarning) {
+                airplaneTripImport = setStatus(airplaneTripImport, ImportStatus.WARNING);
+            } else {
                 airplaneTripImport = setStatus(airplaneTripImport, ImportStatus.SUCCESS);
             }
 

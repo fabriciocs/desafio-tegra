@@ -67,6 +67,9 @@ export class AirplanetripComponent implements OnInit, OnDestroy {
             this.transition();
         }
     }
+    import() {
+        this.airplanetripService.import().subscribe(value => this.loadAll());
+    }
 
     transition() {
         this.router.navigate(['/airplanetrip'], {
