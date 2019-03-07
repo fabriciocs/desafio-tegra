@@ -1,0 +1,186 @@
+<div class="bg-white container-fluid col-md-12 pad">
+    <h2 id="page-heading">
+        <span>Airplane Trips</span>
+    </h2>
+    <jhi-alert></jhi-alert>
+    <br/>
+    <div>
+
+
+        <div class="col-8">
+            <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+                <h2 id="jhi-airplane-trip-heading">Create or edit a Airplane Trip</h2>
+                <div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_airline">Empresa Aérea</label>
+                        <select class="form-control" id="field_airline" name="airline"
+                                [(ngModel)]="airplaneTrip.airline">
+                            <option [ngValue]="null"></option>
+                            <option
+                                [ngValue]="airlineOption.id === airplaneTrip.airline?.id ? airplaneTrip.airline : airlineOption"
+                                *ngFor="let airlineOption of airlines; trackBy: trackAirlineById">{{airlineOption.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_departureDate">Data de Partida</label>
+                        <div class="input-group">
+                            <input id="field_departureDate" type="text" class="form-control" name="departureDate"
+                                   ngbDatepicker #departureDateDp="ngbDatepicker"
+                                   [(ngModel)]="airplaneTrip.departureDate"
+                            />
+                            <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="departureDateDp.toggle()"><fa-icon
+                                [icon]="'calendar-alt'"></fa-icon></button>
+                        </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_arrivalDate">Arrival Date</label>
+                        <div class="input-group">
+                            <input id="field_arrivalDate" type="text" class="form-control" name="arrivalDate"
+                                   ngbDatepicker #arrivalDateDp="ngbDatepicker" [(ngModel)]="airplaneTrip.arrivalDate"
+                            />
+                            <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="arrivalDateDp.toggle()"><fa-icon
+                                [icon]="'calendar-alt'"></fa-icon></button>
+                        </span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_departureAirport">Aeroporto de Partida</label>
+                        <select class="form-control" id="field_departureAirport" name="departureAirport"
+                                [(ngModel)]="airplaneTrip.departureAirport">
+                            <option [ngValue]="null"></option>
+                            <option
+                                [ngValue]="airportOption.id === airplaneTrip.departureAirport?.id ? airplaneTrip.departureAirport : airportOption"
+                                *ngFor="let airportOption of airports; trackBy: trackAirportById">{{airportOption.name}}
+                                ({{airportOption.airport}})
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_arrivalAirport">Aeroporto de Chegada</label>
+                        <select class="form-control" id="field_arrivalAirport" name="arrivalAirport"
+                                [(ngModel)]="airplaneTrip.arrivalAirport">
+                            <option [ngValue]="null"></option>
+                            <option
+                                [ngValue]="airportOption.id === airplaneTrip.arrivalAirport?.id ? airplaneTrip.arrivalAirport : airportOption"
+                                *ngFor="let airportOption of airports; trackBy: trackAirportById">{{airportOption.name}}
+                                ({{airportOption.airport}})
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+                <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-airplane-trip"
+                        (click)="advancedSearch()">
+                    <fa-icon [icon]="'search'"></fa-icon>
+                    <span>
+                        Busca Avançada
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive" *ngIf="airplaneTrips">
+        <table class="table table-striped">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+                <th jhiSortBy="id"><span>ID</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="flight"><span>Flight</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="departureDate"><span>Departure Date</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="arrivalDate"><span>Arrival Date</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="departureTime"><span>Departure Time</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="arrivalTime"><span>Arrival Time</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="price"><span>Price</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="departureAirport.id"><span>Departure Airport</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="arrivalAirport.airport"><span>Arrival Airport</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th jhiSortBy="airline.name"><span>Airline</span>
+                    <fa-icon [icon]="'sort'"></fa-icon>
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let airplaneTrip of airplaneTrips ;trackBy: trackId">
+                <td><a [routerLink]="['/airplane-trip', airplaneTrip.id, 'view' ]">{{airplaneTrip.id}}</a></td>
+                <td>{{airplaneTrip.flight}}</td>
+                <td>{{airplaneTrip.departureDate | date:'mediumDate'}}</td>
+                <td>{{airplaneTrip.arrivalDate | date:'mediumDate'}}</td>
+                <td>{{airplaneTrip.departureTime | date:'medium'}}</td>
+                <td>{{airplaneTrip.arrivalTime | date:'medium'}}</td>
+                <td>{{airplaneTrip.price}}</td>
+                <td>
+                    <div *ngIf="airplaneTrip.departureAirport">
+                        <a [routerLink]="['../airport', airplaneTrip.departureAirport?.id, 'view' ]">{{airplaneTrip.departureAirport?.id}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="airplaneTrip.arrivalAirport">
+                        <a [routerLink]="['../airport', airplaneTrip.arrivalAirport?.id, 'view' ]">{{airplaneTrip.arrivalAirport?.airport}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="airplaneTrip.airline">
+                        <a [routerLink]="['../airline', airplaneTrip.airline?.id, 'view' ]">{{airplaneTrip.airline?.name}}</a>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <div class="btn-group flex-btn-group-container">
+                        <button type="submit"
+                                [routerLink]="['/airplane-trip', airplaneTrip.id, 'view' ]"
+                                class="btn btn-info btn-sm">
+                            <fa-icon [icon]="'eye'"></fa-icon>
+                            <span class="d-none d-md-inline">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/airplane-trip', airplaneTrip.id, 'edit']"
+                                class="btn btn-primary btn-sm">
+                            <fa-icon [icon]="'pencil-alt'"></fa-icon>
+                            <span class="d-none d-md-inline">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/', 'airplane-trip', { outlets: { popup: airplaneTrip.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <fa-icon [icon]="'times'"></fa-icon>
+                            <span class="d-none d-md-inline">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="airplaneTrips && airplaneTrips.length">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [maxSize]="5"
+                            [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5"
+                            [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div>
+</div>

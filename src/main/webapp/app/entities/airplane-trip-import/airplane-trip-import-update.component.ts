@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import * as moment from 'moment';
 import { DATE_TIME_FORMAT } from 'app/shared/constants/input.constants';
 import { IAirplaneTripImport } from 'app/shared/model/airplane-trip-import.model';
 import { AirplaneTripImportService } from './airplane-trip-import.service';
@@ -16,6 +14,7 @@ export class AirplaneTripImportUpdateComponent implements OnInit {
     airplaneTripImport: IAirplaneTripImport;
     isSaving: boolean;
     dateTime: string;
+    file: File;
 
     constructor(protected airplaneTripImportService: AirplaneTripImportService, protected activatedRoute: ActivatedRoute) {}
 
@@ -27,18 +26,18 @@ export class AirplaneTripImportUpdateComponent implements OnInit {
         });
     }
 
+    setFile(files: FileList) {
+        this.file = files.item(0);
+    }
+
     previousState() {
         window.history.back();
     }
 
     save() {
         this.isSaving = true;
-        this.airplaneTripImport.dateTime = this.dateTime != null ? moment(this.dateTime, DATE_TIME_FORMAT) : null;
-        if (this.airplaneTripImport.id !== undefined) {
-            this.subscribeToSaveResponse(this.airplaneTripImportService.update(this.airplaneTripImport));
-        } else {
-            this.subscribeToSaveResponse(this.airplaneTripImportService.create(this.airplaneTripImport));
-        }
+
+        this.subscribeToSaveResponse(this.airplaneTripImportService.create(this.airplaneTripImport, this.file));
     }
 
     protected subscribeToSaveResponse(result: Observable<HttpResponse<IAirplaneTripImport>>) {

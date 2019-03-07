@@ -1,54 +1,33 @@
 <div class="row justify-content-center bg-white pad">
     <div class="col-8">
-        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+        <form name="editForm" role="form" enctype="multipart/form-data" novalidate (ngSubmit)="save()" #editForm="ngForm">
             <h2 id="jhi-airplane-trip-import-heading">Create or edit a Airplane Trip Import</h2>
             <div>
                 <jhi-alert-error></jhi-alert-error>
                 <div class="form-group" [hidden]="!airplaneTripImport.id">
                     <label for="id">ID</label>
                     <input type="text" class="form-control" id="id" name="id"
-                        [(ngModel)]="airplaneTripImport.id" readonly />
-                </div>
-                <div class="form-group">
-                    <label class="form-control-label" for="field_file">File</label>
-                    <input type="text" class="form-control" name="file" id="field_file"
-                        [(ngModel)]="airplaneTripImport.file" />
+                           [(ngModel)]="airplaneTripImport.id" readonly/>
                 </div>
                 <div class="form-group">
                     <label class="form-control-label" for="field_airline">Airline</label>
                     <input type="text" class="form-control" name="airline" id="field_airline"
-                        [(ngModel)]="airplaneTripImport.airline" />
+                           [(ngModel)]="airplaneTripImport.airline"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" for="field_dateTime">Date Time</label>
-                    <div class="d-flex">
-                        <input id="field_dateTime" type="datetime-local" class="form-control" name="dateTime" [(ngModel)]="dateTime" placeholder="YYYY-MM-DD HH:mm"
-                        />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-control-label" for="field_mimeType">Mime Type</label>
-                    <input type="text" class="form-control" name="mimeType" id="field_mimeType"
-                        [(ngModel)]="airplaneTripImport.mimeType" />
-                </div>
-                <div class="form-group">
-                    <label class="form-control-label" for="field_status">Status</label>
-                    <select class="form-control" name="status" [(ngModel)]="airplaneTripImport.status" id="field_status" >
-                        <option value="SUCCESS">SUCCESS</option>
-                        <option value="FAIL">FAIL</option>
-                        <option value="WARNING">WARNING</option>
-                        <option value="WAITING">WAITING</option>
-                        <option value="PROCESSING">PROCESSING</option>
-                    </select>
+                    <label class="form-control-label" for="field_file">File</label>
+                    <input type="file" class="form-control" name="file" id="field_file"
+                           (change)="setFile($event.target.files)"/>
                 </div>
 
             </div>
             <div>
-                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
                     <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span>Cancel</span>
                 </button>
-                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
-                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span>Save</span>
+                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving"
+                        class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span>Salvar</span>
                 </button>
             </div>
         </form>
