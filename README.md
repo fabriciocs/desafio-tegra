@@ -1,6 +1,6 @@
 # Desafio Tegra
 
-Olá Samuel, crei a estrutura do projeto utilizando jhipster, segue o link [https://www.jhipster.tech/documentation-archive/v5.8.1](https://www.jhipster.tech/documentation-archive/v5.8.1).
+Crei a estrutura do projeto utilizando jhipster, segue o link [https://www.jhipster.tech/documentation-archive/v5.8.1](https://www.jhipster.tech/documentation-archive/v5.8.1).
 
 Para executar o projeto, basta entrar na pasta e digitar:
 
