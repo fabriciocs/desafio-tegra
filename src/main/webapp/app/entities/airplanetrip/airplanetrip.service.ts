@@ -49,6 +49,10 @@ export class AirplanetripService {
         return this.http.delete<any>(`${this.resourceUrl}/${id}`, { observe: 'response' });
     }
 
+    import(): Observable<HttpResponse<any>> {
+        return this.http.post<any>(`${this.resourceUrl}/import`, null, { observe: 'response' });
+    }
+
     protected convertDateFromClient(airplanetrip: IAirplanetrip): IAirplanetrip {
         const copy: IAirplanetrip = Object.assign({}, airplanetrip, {
             departureDate:

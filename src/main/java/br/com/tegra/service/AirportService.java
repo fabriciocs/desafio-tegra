@@ -77,9 +77,11 @@ public class AirportService {
         airportRepository.deleteById(id);
     }
 
-    public Airport findByName(String arrivalAirport) {
-        Optional<Airport> airport = airportRepository.findByAirport(arrivalAirport);
-        return airport.orElseThrow(() -> new RuntimeException(airport + " not found"));
+    public Optional<Airport> findByName(String arrivalAirport) {
+        return airportRepository.findByName(arrivalAirport);
+    }
+    public Optional<Airport> findByAirport(String arrivalAirport) {
+        return airportRepository.findByAirport(arrivalAirport);
     }
 
     public void loadAirportsFromUrl() throws IOException {
@@ -87,11 +89,15 @@ public class AirportService {
         ObjectMapper mapper = new ObjectMapper();
         MappingIterator<AirportJson> mappingIterator = mapper.readerFor(AirportJson.class).readValues(url);
 
-        mappingIterator.readAll().forEach(a ->
-            save(new Airport()
-                .name(a.getNome())
-                .airport(a.getAeroporto())
-                .city(a.getCidade())
-            ));
+        mappingIterator.readAll().forEach(a -> {
+            if (!findByName(a.getNome()).isPresent()) {
+                save(new Airport()
+                    .name(a.getNome())
+                    .airport(a.getAeroporto())
+                    .city(a.getCidade())
+                );
+            }
+        });
+
     }
 }

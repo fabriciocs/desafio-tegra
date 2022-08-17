@@ -5,6 +5,7 @@ import br.com.tegra.repository.AirplaneTripRepository;
 import br.com.tegra.web.rest.errors.BadRequestAlertException;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.querydsl.core.types.Predicate;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -127,7 +130,7 @@ public class AirplaneTripService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AirplaneTripResponse> findAllByAirportsAndDate(String departureAirport, String arrivalAirport, LocalDate flighDate,int flighRage, Pageable pageable) {
+    public Page<AirplaneTripResponse> findAllByAirportsAndDate(String departureAirport, String arrivalAirport, LocalDate flighDate, int flighRage, Pageable pageable) {
         return airplaneTripRepository
             .findAllByAirportsAndDate(
                 departureAirport,
@@ -164,12 +167,22 @@ public class AirplaneTripService {
         }
     }
 
+    private ObjectReader loadJsonReader() {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readerFor(AirplaneTripJson.class);
+    }
+
     public Set<AirplaneTrip> loadFromJson(String fileName, Airline airline) throws IOException {
         log.debug("Request to save AirplaneTrip from JSON File : {}", fileName);
         File file = getFile(fileName);
+        MappingIterator<AirplaneTripJson> mappingIterator = loadJsonReader().readValues(file);
+        return mappingIterator.readAll().stream().map(a -> convertToAirplaneTrip(a, airline)).collect(Collectors.toSet());
 
-        ObjectMapper mapper = new ObjectMapper();
-        MappingIterator<AirplaneTripJson> mappingIterator = mapper.readerFor(AirplaneTripJson.class).readValues(file);
+    }
+
+    public Set<AirplaneTrip> loadFromJson(URL url, Airline airline) throws IOException {
+        log.debug("Request to save AirplaneTrip from JSON File : {}", url);
+        MappingIterator<AirplaneTripJson> mappingIterator = loadJsonReader().readValues(url);
         return mappingIterator.readAll().stream().map(a -> convertToAirplaneTrip(a, airline)).collect(Collectors.toSet());
 
     }
@@ -178,26 +191,72 @@ public class AirplaneTripService {
         return new File(request.getServletContext().getRealPath("/upload"), fileName);
     }
 
+    public void importAllFromGithub() throws IOException {
+        String airplanes99Url = "https://raw.githubusercontent.com/tegraoss/desafio-tegra/master/99planes.json";
+        String uberAirUrl = "https://raw.githubusercontent.com/tegraoss/desafio-tegra/master/uberair.csv";
+        String airplanes99 = "99Airplanes";
+        String uberAir = "UberAir";
+        Optional<Airline> airline99 = airlineService.findByName(airplanes99);
+        if (!airline99.isPresent()) {
+            airline99 = Optional.of(airlineService.save(new Airline().name(airplanes99)));
+        }
+
+        Optional<Airline> airlineUberAir = airlineService.findByName(uberAir);
+        if (!airlineUberAir.isPresent()) {
+            airlineUberAir = Optional.of(airlineService.save(new Airline().name(uberAir)));
+        }
+
+        airportService.loadAirportsFromUrl();
+        Set<AirplaneTrip> airplaneTrips = loadFromJson(new URL(airplanes99Url), airline99.get());
+        airplaneTrips.addAll(loadFromCsv(new URL(uberAirUrl), airlineUberAir.get()));
+        for (AirplaneTrip airplaneTrip : airplaneTrips) {
+            if (!exists(airplaneTrip)) {
+                save(airplaneTrip);
+            }
+        }
+    }
+
     public Set<AirplaneTrip> loadFromCsv(String fileName, Airline airline) throws IOException {
         log.debug("Request to load AirplaneTrip from CSV File : {}", fileName);
         try {
-            CsvSchema bootstrapSchema = CsvSchema.builder()
-                .addColumn(new CsvSchema.Column(0, "flight"))
-                .addColumn(new CsvSchema.Column(1, "departureAirport"))
-                .addColumn(new CsvSchema.Column(2, "arrivalAirport"))
-                .addColumn(new CsvSchema.Column(3, "departureDate"))
-                //.addColumn(new CsvSchema.Column(3, "arrivalDate"))
-                .addColumn(new CsvSchema.Column(4, "departureTime"))
-                .addColumn(new CsvSchema.Column(5, "arrivalTime"))
-                .addColumn(new CsvSchema.Column(6, "price"))
-                .build().withHeader();
-            CsvMapper mapper = new CsvMapper();
+
             File file = getFile(fileName);
-            MappingIterator<AirplaneTripCsv> readValues =
-                mapper.readerFor(AirplaneTripCsv.class).with(bootstrapSchema).readValues(file);
+            MappingIterator<AirplaneTripCsv> readValues = loadCsvReader().readValues(file);
             return readValues.readAll().stream().map(a -> convertToAirplaneTrip(a, airline)).collect(Collectors.toSet());
         } catch (Exception e) {
             log.error("Error occurred while loading object list from file " + fileName, e);
+            throw e;
+        }
+    }
+
+    private ObjectReader loadCsvReader() throws IOException {
+        CsvSchema bootstrapSchema = CsvSchema.builder()
+            .addColumn(new CsvSchema.Column(0, "flight"))
+            .addColumn(new CsvSchema.Column(1, "departureAirport"))
+            .addColumn(new CsvSchema.Column(2, "arrivalAirport"))
+            .addColumn(new CsvSchema.Column(3, "departureDate"))
+            //.addColumn(new CsvSchema.Column(3, "arrivalDate"))
+            .addColumn(new CsvSchema.Column(4, "departureTime"))
+            .addColumn(new CsvSchema.Column(5, "arrivalTime"))
+            .addColumn(new CsvSchema.Column(6, "price"))
+            .build().withHeader();
+        CsvMapper mapper = new CsvMapper();
+        //File file = getFile(fileName);
+        return
+            mapper.readerFor(AirplaneTripCsv.class).with(bootstrapSchema);
+    }
+
+    public Set<AirplaneTrip> loadFromCsv(URL url, Airline airline) throws IOException {
+        log.debug("Request to load AirplaneTrip from CSV File : {}", url);
+        try {
+            MappingIterator<AirplaneTripCsv> mapper = loadCsvReader().readValues(url);
+            return mapper
+                .readAll()
+                .stream()
+                .map(a -> convertToAirplaneTrip(a, airline))
+                .collect(Collectors.toSet());
+        } catch (Exception e) {
+            log.error("Error occurred while loading object list from URL " + url, e);
             throw e;
         }
     }
@@ -218,8 +277,8 @@ public class AirplaneTripService {
             .flight(a.getFlight())
             .airline(airline)
             .price(a.getPrice())
-            .arrivalAirport(airportService.findByName(a.getArrivalAirport()))
-            .departureAirport(airportService.findByName(a.getDepartureAirport()));
+            .arrivalAirport(airportService.findByAirport(a.getArrivalAirport()).get())
+            .departureAirport(airportService.findByAirport(a.getDepartureAirport()).get());
     }
 
     private AirplaneTrip convertToAirplaneTrip(AirplaneTripJson a, Airline airline) {
@@ -238,7 +297,7 @@ public class AirplaneTripService {
             .flight(a.getVoo())
             .airline(airline)
             .price(a.getValor())
-            .arrivalAirport(airportService.findByName(a.getDestino()))
-            .departureAirport(airportService.findByName(a.getOrigem()));
+            .arrivalAirport(airportService.findByAirport(a.getDestino()).get())
+            .departureAirport(airportService.findByAirport(a.getOrigem()).get());
     }
 }

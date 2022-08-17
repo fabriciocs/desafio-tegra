@@ -56,18 +56,6 @@ public class AirplaneTripImportResource {
         this.tika = tika;
     }
 
-//    @Bean
-//    public MultipartConfigElement multipartConfigElement() {
-//        return new MultipartConfigElement("");
-//    }
-//
-//    @Bean
-//    public MultipartResolver multipartResolver() {
-//        org.springframework.web.multipart.commons.CommonsMultipartResolver multipartResolver = new org.springframework.web.multipart.commons.CommonsMultipartResolver();
-//        multipartResolver.setMaxUploadSize(1000000);
-//        return multipartResolver;
-//    }
-
 
     private File getFile(MultipartFile file) throws IOException {
         String date = LocalDateTime.now(this.clock).format(DateTimeFormatter.ofPattern("yyMMddHHmmss-"));
