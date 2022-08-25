@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"extensions": {
+		"recommendations": [
+			"vscjava.vscode-java-pack",
+			"redhat.java"
+		]
+	}
+}
